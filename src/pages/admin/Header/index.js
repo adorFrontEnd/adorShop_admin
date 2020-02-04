@@ -51,7 +51,7 @@ class Header extends Component {
     return (
       <div className="header">
         <Row className="header-top">
-          <Col span={24} className="flex-between align-center" style={{ height: 60 }}>
+          <Col span={24} className="flex-between align-center" style={{ height: 60,borderBottom:"2px solid #f2f2f2" }}>
             <div>              
               <div className='logo'>
                 <div className='flex align-center'>
