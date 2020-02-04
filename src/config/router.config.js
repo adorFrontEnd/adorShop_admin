@@ -157,7 +157,7 @@ const routerConfigArr = [
   },
   {
     route_name: "oper",
-    title: "员工",
+    title: "操作员管理",
     icon: "user",
     moduleAuth: true
   },
@@ -166,7 +166,15 @@ const routerConfigArr = [
     path: baseRoute + "/oper/roleAuth",
     loginRequired: true,
     moduleAuth: true,
-    title: "员工角色",
+    title: "角色管理",
+    icon: "solution"
+  },
+  {
+    route_name: "oper.roleAuth.roleAuth",
+    path: baseRoute + "/oper/roleAuth",
+    loginRequired: true,
+    moduleAuth: true,
+    title: "角色管理",
     icon: "solution"
   },
   {
@@ -174,7 +182,15 @@ const routerConfigArr = [
     path: baseRoute + "/oper/operManage",
     loginRequired: true,
     moduleAuth: true,
-    title: "员工管理",
+    title: "账号管理",
+    icon: "team"
+  },
+  {
+    route_name: "oper.operManage.operManage",
+    path: baseRoute + "/oper/operManage",
+    loginRequired: true,
+    moduleAuth: true,
+    title: "账号管理",
     icon: "team"
   }
  

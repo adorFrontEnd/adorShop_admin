@@ -85,10 +85,10 @@ class Page extends Component {
         <div style={{ padding: '15px', borderBottom: '1px solid #BCBCBC' }}>
           <div style={{ display: "flex", position: 'relative' }}>
             <div><img src='/favicon.ico' style={{ height: 50, width: 50, marginRight: 10 }} /></div>
-            <div className='login-form-title'>爱朵钱包</div>
+            <div className='login-form-title'>爱朵电商</div>
             <div style={{ position: 'absolute', bottom: '0px', left: '167px', fontSize: '16px' }}>
-              企业支付开放平台
-              <span style={{ fontSize: '18px', marginLeft: "10px" }}>企业选择</span></div>
+              总后台
+              <span style={{ fontSize: '18px', marginLeft: "10px" }}>门店选择</span></div>
           </div>
         </div>
         <div style={{ padding: '20px 4px' }}>

@@ -26,7 +26,7 @@ class Page extends Component {
   }
 
   componentDidMount() {
-    document.title = '爱朵钱包 | 企业支付开放平台'
+    document.title = '爱朵电商 | 总后台'
   }
 
   goback = () => {
@@ -178,9 +178,9 @@ class Page extends Component {
         <div style={{ padding: '15px', borderBottom: '1px solid #BCBCBC' }}>
           <div style={{ display: "flex", position: 'relative' }}>
             <div><img src='/favicon.ico' style={{ height: 50, width: 50, marginRight: 10 }} /></div>
-            <div className='login-form-title'>爱朵钱包</div>
+            <div className='login-form-title'>爱朵电商</div>
             <div style={{ position: 'absolute', bottom: '0px', left: '167px', fontSize: '16px' }}>
-              企业支付开放平台
+              总平台
               <span style={{ fontSize: '18px', marginLeft: "10px" }}>忘记密码</span></div>
           </div>
         </div>

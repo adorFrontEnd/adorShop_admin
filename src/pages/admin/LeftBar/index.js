@@ -53,26 +53,9 @@ class LeftBar extends Component {
 
   render() {
     return (
-      <div>
-        <div className='logo'>
-          {
-            this.props.collapsed ?
-              <div>
-                <div className='img-wrap' style={{width:"80px"}}>
-                  <img src='/favicon.ico' style={{height:30,width:"auto"}} alt='' />
-                </div>                
-              </div>
-              :
-              <div className='flex align-center'>
-                <div className='img-wrap'>
-                  <img src='/favicon.ico' alt='' />
-                </div>
-                <div className='logo-title ellipsis'>爱朵钱包 | <span className='font-14'>企业支付开放平台</span></div>
-              </div>
-          }
-        </div>
+      <div>        
         <Menu
-          theme="dark"
+          
           selectedKeys={[this.state.current]}
           mode="inline"
           openKeys={this.state.openKeys}
@@ -87,11 +70,21 @@ class LeftBar extends Component {
   renderMenu = (data, parentTitle) => {
     return data.map((item) => {
       if (item.children) {
-        return (
-          <SubMenu title={<span><Icon type={item.icon} style={{ fontSize: 18 }} /><span>{item.title}</span></span>} key={item.key}>
-            {this.renderMenu(item.children, item.title)}
-          </SubMenu>
-        )
+        if (item.level == 2) {
+          return (
+            <Menu.ItemGroup key={item.key} title={item.title}>
+              {this.renderMenu(item.children, item.title)}
+            </Menu.ItemGroup>
+          )
+        }
+        if (item.level == 1) {
+          return (
+            <SubMenu key={item.key} title={<span><Icon type={item.icon} style={{ fontSize: 18 }} /><span>{item.title}</span></span>} key={item.key}>
+              {this.renderMenu(item.children, item.title)}
+            </SubMenu>
+          )
+        }
+
       }
       return <Menu.Item title={item.title} onClick={() => { this.handleClick(item.key, item.title, parentTitle) }} key={item.key} mode="inline">
         <NavLink to={item.path}>

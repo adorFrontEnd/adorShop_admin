@@ -1,31 +1,16 @@
 @import '../../../assets/css/theme.less';
-.header {
-  .header-top {  
-    background: @color-white;
-    color: @color333;
-    height: 60px; // line-height: 60px;
-    text-align: right;
-    a {
-      margin-left: 40px;
-    }
-    .user-login {
-      line-height: 50px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+.header {  
+  .breadcrumb {
+    height: 50px;
+    line-height: 40px;
+    padding: 10px 20px 0;
+    display: flex;
+    align-items: center;   
+    .bread-nav {
       min-width: 100px;
-      padding: 5px 0;
-      cursor: pointer;
-      .avatar {
-        background-color: @color-white;
-        color: @color-dark;
-      }
-      .user-menu {
-        width: 200px;
-      }
-    }
+      margin-right: 20px;
+    }   
   }
-  
   .tabs-nav-container{
     height: 60px;   
     align-items: flex-end;
@@ -91,35 +76,6 @@
       }
     }   
   }  
-
-  .logo{
- 
-    padding-left: 10px;
-    display: flex;
-    min-width: 200px;
-    height:60px;
-    align-items: center;
-    .img-wrap{
-      height: 60px;
-      width: 60px;
-      // background-color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      img{
-        height: 28px;
-        width: auto;
-      }
-    }
-    
-    .logo-title{
-      color: @color333;
-      margin: 0;
-      text-align: center;   
-      padding-left:0px;
-      font-size: 18px;    
-    }
-  }
  
 }
 
