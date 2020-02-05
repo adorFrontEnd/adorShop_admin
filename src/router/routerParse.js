@@ -5,7 +5,15 @@ const _routeData = [
   "oper.roleAuth",
   "oper.roleAuth.roleAuth",
   "oper.operManage",
-  "oper.operManage.operManage" 
+  "oper.operManage.operManage" ,
+  "shop.shopAuth",
+  "shop.shopAuth.shopList",
+  "shop.shopAuth.shopCreated",
+  "shop.shopAuth.shopEdit",
+  "globalSetting.areaSetting",
+  "globalSetting.areaSetting.areaDeploy",
+  "globalSetting.classsifySetting",
+  "globalSetting.classsifySetting.shopClassify"
 ];
 const getRouter = (data) => {
   if (!data) {

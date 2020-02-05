@@ -12,24 +12,17 @@ import AccountSelect from "../pages/login/AccountSelect";
 const Admin = asyncComponent(() => import("../pages/admin"));
 const Home = asyncComponent(() => import("../pages/home/Home"));
 
-const AccountManage = asyncComponent(() => import("../pages/enterpriseAccount/AccountManage"));
-const AppSearch = asyncComponent(() => import("../pages/appManage/AppSearch"));
-const UserSearch = asyncComponent(() => import("../pages/appManage/UserSearch"));
-const QrcodeList = asyncComponent(() => import("../pages/appManage/QrcodeList"));
-
-const TransactionSearch = asyncComponent(() => import("../pages/transaction/TransactionSearch"));
-const RefundSearch = asyncComponent(() => import("../pages/transaction/RefundSearch"));
-const RefundOrderDetail = asyncComponent(() => import("../pages/transaction/RefundOrderDetail"));
-const OrderDetail = asyncComponent(() => import("../pages/transaction/OrderDetail"));
-const RefundRequest = asyncComponent(() => import("../pages/transaction/RefundRequest"));
-
-
 const RoleAuth = asyncComponent(() => import("../pages/oper/RoleAuth"));
 const OperManage = asyncComponent(() => import("../pages/oper/OperManage"));
 
-const SettlementSearch = asyncComponent(() => import("../pages/settlement/Search"));
+const ShopCreated = asyncComponent(() => import("../pages/shop/ShopCreated"));
+const ShopList = asyncComponent(() => import("../pages/shop/ShopList"));
+const ShopEdit = asyncComponent(() => import("../pages/shop/ShopEdit"));
 
-const ThirdPartPayConfig = asyncComponent(() => import("../pages/thirdPartPay/Config"));
+const AreaSetting = asyncComponent(() => import("../pages/globalSetting/AreaSetting"));
+const ClasssifySetting = asyncComponent(() => import("../pages/globalSetting/ClasssifySetting"));
+
+
 
 
 export default class GlobalRouter extends React.Component {
@@ -54,24 +47,17 @@ export default class GlobalRouter extends React.Component {
             isUserLogin() ?
               <Admin>
                 <Switch>
-                  <PrivateRoute path={routerConfig["home"].path} component={Home} />
-                  <PrivateRoute path={routerConfig["enterpriseAccount.accountManage"].path} component={AccountManage} />
-                  <PrivateRoute path={routerConfig["appManage.appSearch"].path} component={AppSearch} />
-                  <PrivateRoute path={routerConfig["appManage.userSearch"].path} component={UserSearch} />
-                  <PrivateRoute path={routerConfig["appManage.qrcodeList"].path} component={QrcodeList} />
-
-                  <PrivateRoute path={routerConfig["transaction.transactionSearch"].path} component={TransactionSearch} />
-                  <PrivateRoute path={routerConfig["transaction.refundSearch"].path} component={RefundSearch} />
-                  <PrivateRoute path={routerConfig["transaction.refundOrderDetail"].path} component={RefundOrderDetail} />
-                  <PrivateRoute path={routerConfig["transaction.orderDetail"].path} component={OrderDetail} />
-                  <PrivateRoute path={routerConfig["transaction.refundRequest"].path} component={RefundRequest} />
-
                   <PrivateRoute path={routerConfig["oper.roleAuth"].path} component={RoleAuth} />
                   <PrivateRoute path={routerConfig["oper.operManage"].path} component={OperManage} />
 
-                  <PrivateRoute path={routerConfig["settlement.search"].path} component={SettlementSearch} />
+                  <PrivateRoute path={routerConfig["shop.shopAuth.shopList"].path} component={ShopList} />
+                  <PrivateRoute path={routerConfig["shop.shopAuth.shopCreated"].path} component={ShopCreated} />
+                  <PrivateRoute path={routerConfig["shop.shopAuth.shopEdit"].path} component={ShopEdit} />
 
-                  <PrivateRoute path={routerConfig["thirdPartPay.config"].path} component={ThirdPartPayConfig} />
+                  <PrivateRoute path={routerConfig["globalSetting.areaSetting.areaDeploy"].path} component={AreaSetting} />
+                  <PrivateRoute path={routerConfig["globalSetting.classsifySetting.shopClassify"].path} component={ClasssifySetting} />
+
+                  
                 </Switch>
               </Admin>
               : <Redirect to={{ pathname: routerConfig["login"].path }} />
