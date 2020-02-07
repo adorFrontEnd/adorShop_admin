@@ -84,7 +84,7 @@ export default class Login extends Component {
               </div>
             </LoginForm>
           </div>
-          <div style={{ width: "45%", flex: "1 1 auto", display: "flex", alignItems: "center", marginLeft: "12px" }}>
+          <div style={{ width: "45%", marginLeft: "12px" }}>
             <img src='/image/bg.png' style={{ maxWidth: "100%" }} />
           </div>
         </div>

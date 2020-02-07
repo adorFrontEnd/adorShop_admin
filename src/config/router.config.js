@@ -19,6 +19,14 @@ const routerConfigArr = [
     path: baseRoute + "/accountSelect"
   },
   {
+    route_name: "home",
+    path: baseRoute + "/home",
+    loginRequired: true,
+    title: "概览",
+    icon: "line-chart",
+    moduleAuth: true
+  },
+  {
     route_name: "shop",
     title: "门店管理",
     icon: "user",

@@ -102,13 +102,8 @@ class Page extends Component {
           </div>
         </div>
         <div style={{ padding: '20px 4px' }}>
-          <Form theme='dark' className='login-form' style={{ width: 450, margin: "0 auto" }}>
-            <Form.Item
-              field="oldPassword"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-              label='请输入原始密码'
-            >
+          <Form theme='dark' className='login-form' style={{ width: 450}}>
+            <Form.Item>
               {
                 getFieldDecorator('oldPassword', {
                   rules: [
@@ -122,12 +117,7 @@ class Page extends Component {
                 )
               }
             </Form.Item>
-            <Form.Item
-              field="newPassword"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-              label='请输入新密码'
-            >
+            <Form.Item>
               {
                 getFieldDecorator('newPassword', {
                   rules: [
@@ -142,12 +132,7 @@ class Page extends Component {
                 )
               }
             </Form.Item>
-            <Form.Item
-              field="repeatPassword"
-              labelCol={{ span: 8 }}
-              wrapperCol={{ span: 16 }}
-              label='重复新密码'
-            >
+            <Form.Item>
               {
                 getFieldDecorator('repeatPassword', {
                   rules: [
@@ -162,14 +147,20 @@ class Page extends Component {
                 )
               }
             </Form.Item>
-            <Row>
-              <Col offset={6} span={18} style={{ paddingBottom: 30 }}>
-                <div>
-                  <Button loading={this.state.showBtnLoading} onClick={this.submitClicked} type='primary' style={{ width: 100, marginRight: "20px" }}>确认修改</Button>
-                  <Button style={{ width: 100, marginRight: "20px" }} onClick={this.goback}>返回</Button>
-                </div>
-              </Col>
-            </Row>
+            <Form.Item>
+      
+          {/* 登录按钮 */}
+          <Button
+            shape="round"           
+            loading={this.props.loading}
+            type="primary"
+            htmlType="submit"
+            onClick={this.submitClicked}
+            className="login-form-button yellow-btn">
+            保存
+          </Button>
+        
+        </Form.Item>
           </Form>
         </div>
       </div>

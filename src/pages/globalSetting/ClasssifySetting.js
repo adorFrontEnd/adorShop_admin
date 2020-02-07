@@ -199,10 +199,9 @@ class Page extends Component {
                   uploadCallback={this.uploadPic}
                 />
               </Col>
-              <div>图片大小不超过2MB
-
-</div>
+            
             </Row>
+            <div style={{marginLeft:'33%',color:'#ff6700'}}>图片大小不超过2MB</div>
           </SubmitForm>
         
         </Modal>

@@ -8,7 +8,7 @@ import { searchOperList, deleteOper, saveOrUpdate } from '../../api/oper/oper';
 import { searchRoleList } from '../../api/oper/role';
 import { pagination } from '../../utils/pagination';
 
-const _title = "员工账号";
+const _title = "账号管理";
 const _description = "";
 
 class Page extends Component {
@@ -95,12 +95,8 @@ class Page extends Component {
       title: '操作',
       render: (text, record, index) => (
         <span>
-          {
-            record.roleName != '超级管理员' ?
               <span>
                 <a onClick={() => { this.showAcountModal(record) }}>编辑</a>
-                <Divider type="vertical" />
-                <a onClick={() => { this.showPasswordModal(record) }}>重置密码</a>
                 <Divider type="vertical" />
                 <Popconfirm
                   placement="topLeft" title='确认要删除吗？'
@@ -108,9 +104,7 @@ class Page extends Component {
                   <a size="small" className='color-red'>删除</a>
                 </Popconfirm>
               </span>
-              :
-              <a onClick={() => { this.showPasswordModal(record) }}>重置密码</a>
-          }
+         
         </span>
       )
     }

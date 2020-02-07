@@ -4,6 +4,7 @@ import { baseRoute, routerConfig } from '../../config/router.config';
 import { sendSms, forgetPassword } from '../../api/oper/login';
 import './index.less';
 import './pwd.less';
+import { apiUrlPrefix } from '../../config/http.config';
 import Toast from "../../utils/toast";
 
 class Page extends Component {
@@ -163,7 +164,6 @@ class Page extends Component {
       let { phone, code, password } = data;
       forgetPassword({ phone, code, password })
         .then(() => {
-
           Toast('重置密码成功！');
           window.location.href = '/login';
         })
@@ -184,109 +184,106 @@ class Page extends Component {
               <span style={{ fontSize: '18px', marginLeft: "10px" }}>忘记密码</span></div>
           </div>
         </div>
-        <div style={{ padding: '20px 4px' }}>
+        <div style={{ display: 'flex', justifyContent: "space-between", padding: '20px 4px' }}>
+          <div style={{ padding: '20px 4px' }}>
 
-          <Form theme='dark' className='login-form' style={{ width: 450, margin: "0 auto" }}>
+            <Form theme='dark' className='login-form' style={{ width: 450 }}>
 
-            <Form.Item
-              field="phone"
-            >
-              {
-                getFieldDecorator('phone', {
-                  rules: [
-                    { required: true, message: '请输入11位手机号码!' },
-                    { min: 11, max: 11, message: '请输入11位手机号码!' },
-                    { pattern: /^\d{11}$/, message: '请输入11位数字!' }
-                  ],
+              <Form.Item className="radius-input">
+                {getFieldDecorator('username', {
+                  rules: [{ required: true, message: '请输入账号!' }],
                 })(
                   <Input
-                    type='number'
-                    min={0}
-                    className='bottom-line-input prefix'
-                    prefix={<span>中国+86</span>}
-                    placeholder="今后使用手机号登录"
-                    onChange={this.onPhoneChange}
+                    onBlur={this.usernameOnBlur}
+                    onChange={(e) => { this.onLoginChange(e, 'username') }}
+                    // prefix={<Icon type="user" style={{ color: "#999999" }} />}
+                    placeholder="请填写总后台账号"
                   />
-                )
-              }
-            </Form.Item>
-
-            <Form.Item
-              field="code"
-              style={{ position: "relative" }}
-            >
-              {
-                this.state.showVerifySlider ?
-                  <div className={!this.state.confirmSuccess ? 'drag no-margin' : 'comfirmdrag'} >
-                    <div className="drag_bg" style={{ width: this.state.width }}></div>
-                    <div className="drag_text">{this.state.confirmWords}</div>
-                    <div className="handler" onMouseDown={this.mousedownFn} style={{ backgroundImage: `url(${this.state.comfirmbg})`, left: this.state.left, backgroundRepeat: 'no-repeat', backgroundPosition: 'center' }}></div>
-                  </div>
-                  :
-                  getFieldDecorator('code', {
+                )}
+              </Form.Item>
+              <Form.Item className="radius-input">
+                {
+                  getFieldDecorator('password', {
                     rules: [
-                      { required: true, message: '请输入6位验证码!' },
-                      { pattern: /^\d{6}$/, message: '请输入6位数字验证码!' }
+                      { required: true, message: '请输入密码!' }
                     ],
                   })(
                     <Input
-                      min={0}
-                      className='bottom-line-input'
-                      placeholder="填写6位短信验证码"
+
+                      onChange={(e) => { this.onLoginChange(e, 'password') }}
+                      // prefix={<Icon type="lock" theme="filled" style={{ color: "#999999" }} />}
+                      type="password" placeholder="请填写重置密码"
                     />
                   )
-              }
+                }
+              </Form.Item>
+              <div className="image-code">
+                <Form.Item className='qrcode-input'>
+                  {getFieldDecorator('imageCode', {
+                    rules: [
+                      { required: true, message: '请输入验证码!' },
+                      {
+                        pattern: new RegExp('^[0-9a-zA-Z]{4}$', 'g'),
+                        message: '请输入正确的验证码'
+                      }
+                    ],
+                  })(
+                    <Input
 
-              {
-                this.state.showVerifySlider ?
-                  null :
-                  <span style={{ position: 'absolute', right: "10px", top: 0, lineHeight: "20px" }}>
-                    {
-                      this.state.showVefifyClickLinkStatus == '0' ?
-                        <span className='color-gray'>获取短信验证码</span>
-                        : null
-                    }
-                    {
-                      this.state.showVefifyClickLinkStatus == '1' ?
-                        (
-                          this.state.countNum == 60 ?
-                            < a onClick={this.verfyCodeClicked}> 获取短信验证码</a>
-                            :
-                            <span style={{ color: "#f00" }}>{this.state.countNum}秒后刷新</span>
-                        )
-                        : null
-                    }
-                  </span>
-              }
+                      onChange={(e) => { this.onLoginChange(e, 'imageCode') }}
+                      // prefix={<Icon type="safety-certificate" theme="filled" style={{ color: "#999999" }} />}
+                      maxLength={4} type="text" placeholder="填写验证码"
+                    />
+                  )}
+                </Form.Item>
+                <div className='img-wraper'>
+                  <img
+                    style={{ "cursor": "pointer" }}
+                    onClick={this.imageChange}
+                    src={apiUrlPrefix + "imageCaptcha?username=" + this.state.username + "&stamp=" + this.state.now}
+                  />
+                </div>
 
-            </Form.Item>
-
-            <Form.Item
-              field="password"
-            >
-              {
-                getFieldDecorator('password', {
+              </div>
+              <Button
+                loading={this.props.loading}
+                type="primary"
+                htmlType="submit"
+                className="login-form-button yellow-btn">
+                发送短信
+  </Button>
+              <Form.Item className='qrcode-input'>
+                {getFieldDecorator('imageCode', {
                   rules: [
-                    { required: true, message: '请输入密码!' },
-                    { pattern: /^[A-Za-z0-9]{8,15}$/, message: '8-15位字符，包含数字和字母!' }
+                    { required: true, message: '请输入验证码!' },
+                    {
+                      pattern: new RegExp('^[0-9a-zA-Z]{4}$', 'g'),
+                      message: '请输入正确的验证码'
+                    }
                   ],
                 })(
-                  <Input.Password
-                    className='bottom-line-input'
-                    type="password" placeholder="8-15位字符，包含数字和字母"
+                  <Input
+
+                    onChange={(e) => { this.onLoginChange(e, 'imageCode') }}
+                    // prefix={<Icon type="safety-certificate" theme="filled" style={{ color: "#999999" }} />}
+                    maxLength={4} type="text" placeholder="填写6位短信验证码"
                   />
-                )
-              }
-            </Form.Item>
-            <Row>
-              <Col span={24} style={{ paddingBottom: 30 }}>
-                <div>
-                  <Button onClick={this.submitPassword} size='large' type='primary' style={{ width: "100%", marginRight: "20px" }}>确认修改</Button>
-                </div>
-              </Col>
-            </Row>
-          </Form>
+                )}
+              </Form.Item>
+              <Button
+                loading={this.props.loading}
+                type="primary"
+                htmlType="submit"
+                className="login-form-button yellow-btn">
+                确认重置
+  </Button>
+            </Form>
+          </div>
+          <div style={{ width: "45%", marginLeft: "12px" }}>
+            <img src='/image/bg.png' style={{ maxWidth: "100%" }} />
+          </div>
         </div>
+
       </div >
     )
   }
