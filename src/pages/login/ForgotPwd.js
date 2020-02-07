@@ -197,7 +197,7 @@ class Page extends Component {
                     onBlur={this.usernameOnBlur}
                     onChange={(e) => { this.onLoginChange(e, 'username') }}
                     // prefix={<Icon type="user" style={{ color: "#999999" }} />}
-                    placeholder="请填写总后台账号"
+                    placeholder="请填写后台账号"
                   />
                 )}
               </Form.Item>
@@ -251,7 +251,7 @@ class Page extends Component {
                 htmlType="submit"
                 className="login-form-button yellow-btn">
                 发送短信
-  </Button>
+              </Button>
               <Form.Item className='qrcode-input'>
                 {getFieldDecorator('imageCode', {
                   rules: [
@@ -276,7 +276,7 @@ class Page extends Component {
                 htmlType="submit"
                 className="login-form-button yellow-btn">
                 确认重置
-  </Button>
+              </Button>
             </Form>
           </div>
           <div style={{ width: "45%", marginLeft: "12px" }}>
