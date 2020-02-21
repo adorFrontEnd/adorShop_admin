@@ -73,7 +73,7 @@ class Page extends Component {
   columns = [
     { title: "角色名", dataIndex: "name" },
     { title: "员工账号数", dataIndex: "accountNum", render: data => data || 0 },
-    { title: "创建时间", dataIndex: "createTime", render: data => data ? dateUtil.getDateTime(data) : "--" },
+    { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
     {
       title: '操作',
       render: (text, record, index) => (
@@ -111,27 +111,7 @@ class Page extends Component {
       })
   }
 
-  // 禁用角色
-  deactiveRole = (record) => {
-    let { id } = record;
-    let status = '0';
-    saveOrUpdate({ id, status })
-      .then(() => {
-        Toast("禁用角色成功！");
-        this.getPageData();
-      })
-  }
-
-  // 激活角色
-  activeRole = (record) => {
-    let { id } = record;
-    let status = '1';
-    saveOrUpdate({ id, status })
-      .then(() => {
-        Toast("启用角色成功！");
-        this.getPageData();
-      })
-  }
+ 
 
   /* Modal操作*******************************************************************************************************************************************/
   newItemFormList = [
@@ -144,13 +124,6 @@ class Page extends Component {
         { required: true, message: '请输入角色名称!' }
       ]
     }
-    // ,
-    // {
-    //   type: "INPUT",
-    //   field: "remark",
-    //   label: "角色描述:",
-    //   placeholder: "请输入描述"
-    // }
   ]
 
 
@@ -162,6 +135,7 @@ class Page extends Component {
     let selectRoleData = null;
     if (data) {
       let { models, name, remark, specialModels } = data;
+    
       editFormValue = { name, remark, _s: Date.now() }
       selectRoleAuth = this.getRoleAuthArr(models);
       selectRoleSpecAuth = this.getRoleAuthArr(specialModels);
@@ -240,6 +214,7 @@ class Page extends Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <CommonPage title={_title} description={_description} >
+        <div style={{padding:'10px'}}>
         <div className='padding20-0'>
           <Button onClick={() => { this.showAuthModalClick() }} type='primary'>创建角色</Button>
         </div>
@@ -281,6 +256,7 @@ class Page extends Component {
             </Row>
           </SubmitForm>
         </Modal>
+        </div>
       </CommonPage>
     )
   }

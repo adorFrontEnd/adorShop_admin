@@ -92,7 +92,6 @@ const getAllRouter = (data) => {
   }
   let routeIndexMap = {};
   let router = [];
-  console.log(data)
   for (let i = 0; i < data.length; i++) {
     let item = data[i];
     if (!item || !routerConfig[item]) {

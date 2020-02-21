@@ -25,7 +25,6 @@ class LeftBar extends Component {
     this.routeList = getRouter(routerData);
     this.rootSubmenuKeys = this.routeList.map(item => item.key);
     const menuTree = this.renderMenu(this.routeList);
-    console.log(menuTree)
     this.setState({
       menuTree,
       current: '1',

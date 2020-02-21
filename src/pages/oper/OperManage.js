@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Col, Row, Card, Spin, Form, Button, Input, Table, Popconfirm, Divider, Modal, Select } from 'antd';
+import { Col, Row, Form, Button, Input, Table, Popconfirm, Divider, Modal, Select } from 'antd';
 import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
-import { SearchForm, SubmitForm } from '../../components/common-form';
+import { SubmitForm } from '../../components/common-form';
 import dateUtil from '../../utils/dateUtil';
 import { searchOperList, deleteOper, saveOrUpdate } from '../../api/oper/oper';
 import { searchRoleList } from '../../api/oper/role';
@@ -15,9 +15,7 @@ class Page extends Component {
 
   state = {
 
-    tableDataList: null,
-    showTableLoading: false,
-    roleList: [],
+    tableDataList:null,
     editFormValue: null,
     newItemModalVisible: false,
     selectOper: null,
@@ -36,10 +34,8 @@ class Page extends Component {
   }
 
   getPageData = () => {
-
     let _this = this;
     this._showTableLoading();
-
     searchOperList(this.params).then(res => {
       this._hideTableLoading();
       let _pagination = pagination(res, (current) => {
@@ -73,7 +69,6 @@ class Page extends Component {
       })
   }
 
-
   _showTableLoading = () => {
     this.setState({
       showTableLoading: true
@@ -90,11 +85,14 @@ class Page extends Component {
     { title: "账号名", dataIndex: "nickname" },
     { title: "登录手机号", dataIndex: "username" },
     { title: "账号角色", dataIndex: "roleName", render: data => data || '--' },
-    { title: "创建时间", dataIndex: "createTime", render: data => data ? dateUtil.getDateTime(data) : "--" },
+    { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
     {
       title: '操作',
       render: (text, record, index) => (
         <span>
+          {
+            record.roleName != '超级管理员' ?
+                <span>
               <span>
                 <a onClick={() => { this.showAcountModal(record) }}>编辑</a>
                 <Divider type="vertical" />
@@ -105,6 +103,8 @@ class Page extends Component {
                 </Popconfirm>
               </span>
          
+        </span> : '--'
+          }
         </span>
       )
     }
@@ -169,10 +169,8 @@ class Page extends Component {
   }
 
   newItemModalSaveClicked = (data) => {
-
     let { roleId } = data;
     roleId = roleId.key;
-
     let params = { ...data, roleId }
     let title = '添加账户成功！';
     if (this.state.selectOper) {
@@ -197,63 +195,13 @@ class Page extends Component {
       })
   }
 
-  // 重置密码
-  resetPassword = (record) => {
-    let { id } = record;
-    let status = '0';
-    saveOrUpdate({ id, status })
-      .then(() => {
-        Toast("禁用账户成功！");
-        this.getPageData();
-      })
-  }
-
-  // 显示重置密码modal
-  showPasswordModal = (selectOper) => {
-
-    this.setState({
-      selectOper,
-      passwordModalVisible: true
-    })
-  }
-
-  // 隐藏密码modal
-  hidePasswordModal = () => {
-    this.setState({
-      passwordModalVisible: false
-    })
-  }
-
-  passwordModalConfirm = () => {
-    let { id } = this.state.selectOper;
-    let { password } = this.state;
-    if (!password || password.length < 6) {
-      Toast('请填入至少6位数的密码！');
-      return;
-    }
-    saveOrUpdate({ id, password })
-      .then(() => {
-        Toast('重置密码成功！');
-        this.hidePasswordModal();
-      })
-  }
-
-  passwordOnChange = (e) => {
-    let password = e.target.value;
-    this.setState({
-      password
-    })
-  }
-
 
   /**搜索，过滤 *******************************************************************************************************************************/
   searchClicked = () => {
     let params = this.props.form.getFieldsValue();
-
     let { inputKey, inputValue, ...data } = params;
     let _data = {};
     _data[inputKey] = inputValue || null;
-
     this.params = {
       ...data,
       ..._data
@@ -271,7 +219,8 @@ class Page extends Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <CommonPage title={_title} description={_description} >
-        <div>
+      <div style={{padding:'10px'}}>
+      <div>
           <Button onClick={() => { this.showAcountModal() }} style={{ width: 100 }} type='primary'>创建账号</Button>
         </div>
         <div className='margin10-0'>
@@ -285,11 +234,11 @@ class Page extends Component {
             >
               {
                 getFieldDecorator('inputKey', {
-                  initialValue: "nicknameParam"
+                  initialValue: "nickname"
                 })(
                   <Select>
-                    <Select.Option value='nicknameParam'>账户名</Select.Option>
-                    <Select.Option value='usernameParam'>登录手机号</Select.Option>
+                    <Select.Option value='nickname'>账户名</Select.Option>
+                    <Select.Option value='username'>登录手机号</Select.Option>
                   </Select>
                 )
               }
@@ -393,6 +342,7 @@ class Page extends Component {
 
         </Modal>
 
+      </div>
       </CommonPage >)
   }
 }

@@ -4,8 +4,8 @@ import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
 import { SearchForm, SubmitForm } from '../../components/common-form';
 import dateUtil from '../../utils/dateUtil';
-import { searchOperList, deleteOper, saveOrUpdate } from '../../api/oper/oper';
-import { searchRoleList } from '../../api/oper/role';
+import { shopList  } from '../../api/shopManage/shopList';
+
 import { pagination } from '../../utils/pagination';
 import { connect } from 'react-redux';
 import { changeRoute } from '../../store/actions/route-actions';
@@ -19,15 +19,39 @@ class Page extends Component {
 
   state = {
     tableDataList: null,
+    selectedRowKeys: null,
+    showTableLoading: false
   }
 
   componentWillMount() {
-
+    this.getPageData();
 
   }
 
   params = {
     page: 1
+  }
+  getPageData = () => {
+    let _this = this;
+    this._showTableLoading();
+    shopList(this.params).then(res => {
+      this._hideTableLoading();
+      let _pagination = pagination(res, (current) => {
+        this.params.page = current
+        _this.getPageData();
+      }, (cur, pageSize) => {
+        this.params.page = 1;
+        this.params.size = pageSize
+        _this.getPageData();
+      })
+
+      this.setState({
+        tableDataList: res.data,
+        pagination: _pagination
+      })
+    }).catch(() => {
+      this._hideTableLoading();
+    })
   }
 
 
@@ -38,41 +62,72 @@ class Page extends Component {
 
   // 表格相关列 
   columns = [
-    { title: "门店名称", dataIndex: "nickname" },
-    { title: "店招", dataIndex: "username" },
-    { title: "地址", dataIndex: "roleName", render: data => data || '--' },
+    { title: "门店名称", dataIndex: "name" },
+    { title: "店招", dataIndex: "imageUrl", render: data => <span><img style={{ height: 40, width: 40 }} src={data} /></span> },
+    { title: "地址", dataIndex: "address", render: data => data || '--' },
     { title: "联系人", dataIndex: "roleName", render: data => data || '--' },
-    { title: "超管账号", dataIndex: "roleName", render: data => data || '--' },
-    { title: "经营范围", dataIndex: "roleName", render: data => data || '--' },
-    { title: "创建时间", dataIndex: "createTime", render: data => data ? dateUtil.getDateTime(data) : "--" },
-    { title: "状态", dataIndex: "roleName", render: data => data || '--' },
+    { title: "超管账号", dataIndex: "shopOperId", render: data => data || '--' },
+    { title: "经营范围", dataIndex: "categoryIds", render: data => data || '--' },
+    { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
+    { title: "状态", dataIndex: "status", render: data => data || '--' },
     {
       title: '操作',
       render: (text, record, index) => (
         <span>
-          {
-            record.roleName != '超级管理员' ?
-              <span>
-                <NavLink to={shopEditPath}>编辑</NavLink>
-                <Divider type="vertical" />
-                <a onClick={() => { this.showPasswordModal(record) }}>封店</a>
-                <Divider type="vertical" />
-                <Popconfirm
-                  placement="topLeft" title='确认要删除吗？'
-                  onConfirm={() => { this.deleteOper(record) }} >
-                  <a size="small" className='color-red'>删除</a>
-                </Popconfirm>
-              </span>
-              :
-              <a onClick={() => { this.showPasswordModal(record) }}>重置密码</a>
-          }
+          <span>
+            <Link to={shopEditPath+`?record=${record.id}`} className='color-red'>编辑</Link>
+            <Divider type="vertical" />
+            <Popconfirm
+              placement="topLeft" title='确认要封店吗？'
+              onConfirm={() => { this.deleteOper(record) }} >
+              <a size="small" className='color-red'>封店</a>
+            </Popconfirm>
+          </span>
+
         </span>
       )
     }
   ]
+  _showTableLoading = () => {
+    this.setState({
+      showTableLoading: true
+    })
+  }
 
+  _hideTableLoading = () => {
+    this.setState({
+      showTableLoading: false
+    })
+  }
+  /******查询表单操作****************************************************************************************************************** */
+  // 顶部查询表单
+  //查询按钮点击事件
+
+  searchClicked = () => {
+    let params = this.props.form.getFieldsValue();
+    console.log(params)
+    // let { time, type, inputData } = params;
+    // if (time && time.length) {
+    //   let [startTime, stopTime] = time;
+    //   let startActivityTimeStamp = startTime ? dateUtil.getDayStartStamp(Date.parse(startTime)) : null;
+    //   let endActivityTimeStamp = stopTime ? dateUtil.getDayStopStamp(Date.parse(stopTime)) : null;
+    //   this.params = {
+    //     ...params,
+    //     startActivityTimeStamp,
+    //     endActivityTimeStamp,
+    //     time: null
+    //   }
+    // } else {
+    //   this.params = params;
+    // }
+    // this.getPageData();
+  }
+  // 重置
+  resetClicked = () => {
+    this.props.form.resetFields();
+  }
   goShopCreated = (id) => {
-    let title = 'chuangjian'
+    let title = '创建门店'
     this.props.changeRoute({ path: 'shop.shopAuth.shopCreated', title, parentTitle: '创建门店' });
   }
 
@@ -83,45 +138,66 @@ class Page extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      }
+    };
     return (
       <CommonPage title={_title} description={_description} >
-        <div className='margin10-0' style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <NavLink to={shopCreatedPath}>
-            <Button style={{ width: 100 }} type='primary'>创建门店</Button>
-          </NavLink>
-          <Form layout='inline'>
-            <Form.Item>
-              {
-                getFieldDecorator('inputKey', {
-                  initialValue: "nicknameParam"
-                })(
-                  <Select>
-                    <Select.Option value='nicknameParam'>全部状态</Select.Option>
-                    <Select.Option value='usernameParam'>正常</Select.Option>
-                    <Select.Option value='usernameParam'>已封</Select.Option>
-                  </Select>
-                )
-              }
-            </Form.Item>
-            <Form.Item>
-              <Input placeholder='商品名称/商品编号' onChange={this.boxInputDataChange} />
-            </Form.Item>
-            <Form.Item>
-              <Button type='primary' onClick={this.getPageData}>查询</Button>
-            </Form.Item>
-            <Form.Item>
-              <Button type='primary' onClick={this.getPageData}>重置</Button>
-            </Form.Item>
-          </Form>
+        <div style={{ padding: '10px' }}>
+          <div className='margin10-0' style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <NavLink to={shopCreatedPath}>
+              <Button style={{ width: 100 }} type='primary'>创建门店</Button>
+            </NavLink>
+            <div className='flex-between align-center margin-bottom20'>
+              <Form layout='inline'>
+                <Form.Item>
+                  {
+                    getFieldDecorator('inputKey', {
+                      initialValue: "nicknameParam"
+                    })(
+                      <Select>
+                        <Select.Option value='nicknameParam'>全部状态</Select.Option>
+                        <Select.Option value='usernameParam'>正常</Select.Option>
+                        <Select.Option value='username'>已封</Select.Option>
+                      </Select>
+                    )
+                  }
+                </Form.Item>
+                <Form.Item
+                  field="inputValue"
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 18 }}
+                >
+                  {
+                    getFieldDecorator('inputValue', {
+                    })(
+                      <Input allowClear style={{ width: "240px" }} placeholder='商品名称/商品编号' onChange={this.boxInputDataChange}/>
+                    )
+                  }
+                </Form.Item>
+              
+              </Form>
+              <div style={{ minWidth: 370 }}>
+                <Button type='primary' className='normal margin0-20' onClick={() => { this.searchClicked() }}>查询</Button>
+                <Button className='normal' onClick={this.resetClicked}>重置</Button>
+
+              </div>
+            </div>
+          </div>
+
+          <Table
+            indentSize={10}
+            rowKey="id"
+            columns={this.columns}
+            loading={this.state.showTableLoading}
+            pagination={this.state.pagination}
+            dataSource={this.state.tableDataList}
+            rowSelection={rowSelection}
+
+          />
         </div>
-        <Table
-          indentSize={10}
-          rowKey="id"
-          columns={this.columns}
-          loading={this.state.showTableLoading}
-          pagination={this.state.pagination}
-          dataSource={this.state.tableDataList}
-        />
 
 
 

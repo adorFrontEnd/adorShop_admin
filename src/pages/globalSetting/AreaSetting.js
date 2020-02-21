@@ -37,7 +37,6 @@ class AreaManage extends Component {
     })
     getCityList()
       .then(rawClassifyList => {
-
         this.refreshClassifyList(rawClassifyList);
         this.setState({
           showClassifyLoading: false
@@ -309,8 +308,8 @@ class AreaManage extends Component {
 
   // 编辑分类
   editClassify = (classify) => {
-    let { name, sort, remark, id,parentId } = classify;
-    let selectParentName = parentId == 0 ? '所有分类': this.getClassifyNameById(parentId);
+    let { name, sort, remark, id, parentId } = classify;
+    let selectParentName = parentId == 0 ? '所有分类' : this.getClassifyNameById(parentId);
     this.addSubClassifyformList[0].initialValue = selectParentName;
     let editSubClassifyFormValue = { name, sort, remark };
     this.setState({
@@ -327,7 +326,7 @@ class AreaManage extends Component {
     let editSubClassifyFormValue = {
       name: null, sort: null, remark: null
     }
-    let selectParentName = selectParentId == 0 ? '所有分类': this.getClassifyNameById(selectParentId);
+    let selectParentName = selectParentId == 0 ? '所有分类' : this.getClassifyNameById(selectParentId);
     this.addSubClassifyformList[0].initialValue = selectParentName;
     this.setState({
       selectId: null,

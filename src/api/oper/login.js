@@ -30,7 +30,7 @@ const forgetPassword = (params) => {
 
 const changePassword = (params) => {
 
-  return baseHttpProvider.postFormApi('api/oper/changePassword', params, { tokenless: true })
+  return baseHttpProvider.postFormApi('api/admin/oper/updatePassword', params)
 }
 
 export {

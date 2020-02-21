@@ -36,9 +36,10 @@ export default class Login extends Component {
 
     userLogin(params).then((res) => {
 
-      if (res && res.loginAccounts) {
+      if (res ) {
         message.success("登录成功！");
         setCacheAccountList({ username: params.username, password: params.password, loginAccounts: res.loginAccounts });
+        setCacheUserInfo(res)
         if (res.updatePassword == 0) {
           setTimeout(() => {
             this.props.history.push(routerConfig['changepwd'].path);
@@ -46,7 +47,7 @@ export default class Login extends Component {
           return;
         }
         setTimeout(() => {
-          this.props.history.push(routerConfig['accountSelect'].path);
+          this.props.history.push(routerConfig['shop.shopAuth'].path);
           this.setState({
             showBtnLoading: false
           })

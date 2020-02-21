@@ -2,7 +2,7 @@ import baseHttpProvider from '../base/baseHttpProvider';
 
 const getCityList = (params) => {
 
-  return baseHttpProvider.getApi('api/city/getAllCityList',null
+  return baseHttpProvider.getApi('api/city/getCityList',null
  )
 }
 

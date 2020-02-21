@@ -19,8 +19,8 @@ const getCacheFirstEnterPage = () => {
   let userInfo = getCacheUserInfo();
   if (userInfo && userInfo.data && userInfo.data.length) {
     let data = userInfo.data;
-    let route = data.includes("home") ? "home" : data[0];
-    console.log("getCacheFirstEnterPage：" + route)
+    let route = data.includes("home") ? "home" : data[1];
+    // console.log("getCacheFirstEnterPage：" + route)
     return route
   }
 }

@@ -54,8 +54,8 @@ class Page extends Component {
       }
       let params = {
         oldPassword: md5(oldPassword),
-        newPassword: md5(newPassword),
-        phone
+        newPassword: md5(newPassword)
+       
       }
       this.setState({
         showBtnLoading: true
@@ -76,7 +76,7 @@ class Page extends Component {
             this.setState({
               showBtnLoading: false
             })
-            this.props.history.push(routerConfig['accountSelect'].path);
+            this.props.history.push(routerConfig['shop.shopAuth'].path);
           }, 1000)
 
         })
@@ -108,7 +108,7 @@ class Page extends Component {
                 getFieldDecorator('oldPassword', {
                   rules: [
                     { required: true, message: '请输入原始密码!' },
-                    { pattern: /^[A-Za-z0-9]{8,15}$/, message: '8-15位字符，包含数字和字母!' }
+                    { pattern: /^[A-Za-z0-9]{0,6}$/, message: '6位字符，包含数字和字母!' }
                   ],
                 })(
                   <Input.Password
@@ -122,7 +122,7 @@ class Page extends Component {
                 getFieldDecorator('newPassword', {
                   rules: [
                     { required: true, message: '请输入密码!' },
-                    { pattern: /^[A-Za-z0-9]{8,15}$/, message: '8-15位字符，包含数字和字母!' }
+                    { pattern: /^[A-Za-z0-9]{0,6}$/, message: '6位字符，包含数字和字母!' }
                   ],
                 })(
                   <Input.Password
@@ -137,7 +137,7 @@ class Page extends Component {
                 getFieldDecorator('repeatPassword', {
                   rules: [
                     { required: true, message: '请输入密码!' },
-                    { pattern: /^[A-Za-z0-9]{8,15}$/, message: '8-15位字符，包含数字和字母!' }
+                    { pattern: /^[A-Za-z0-9]{0,6}$/, message: '6位字符，包含数字和字母!' }
                   ],
                 })(
                   <Input.Password

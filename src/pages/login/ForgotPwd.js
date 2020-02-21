@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { message, Form, Input, Button, Row, Col } from 'antd';
 import { baseRoute, routerConfig } from '../../config/router.config';
 import { sendSms, forgetPassword } from '../../api/oper/login';
+import { getCacheAccountList, setCacheAccountList, getCacheUserInfo } from '../../middleware/localStorage/login';
 import './index.less';
 import './pwd.less';
 import { apiUrlPrefix } from '../../config/http.config';
@@ -10,107 +11,58 @@ import Toast from "../../utils/toast";
 class Page extends Component {
 
   state = {
-    showBtnLoading: false,
-    showVerifySlider: false,
-    beginClientX: 0,
-    /*距离屏幕左端距离*/
-    mouseMoveStata: false,
-    maxwidth: 360,
-    confirmWords: '按住滑块向右拖动验证登录',
-    /*滑块文字*/
-    confirmSuccess: false,
-    left: '0',
-    width: '0',
-    comfirmbg: 'image/slider.png',
     showVefifyClickLinkStatus: "0",
     countNum: 60
   }
 
   componentDidMount() {
-    document.title = '爱朵电商 | 总后台'
+    document.title = '爱朵电商 | 总后台';
+    this.imageChange();
+    this.resetCdTimer();
   }
 
   goback = () => {
     window.history.back();
   }
 
-  componentDidMount() {
-    document.body.addEventListener('mousemove', this.mousemoveEvent);
-    document.body.addEventListener('mouseup', this.mouseupEvent)
-  }
-
-  componentWillUnmount() {
-    document.body.removeEventListener('mousemove', this.mousemoveEvent);
-    document.body.removeEventListener('mouseup', this.mouseupEvent);
-    this.resetCdTimer();
-  }
 
 
-  mouseupEvent = (e) => {
-    //鼠标放开 
-    this.setState({
-      mouseMoveStata: false
-    })
-    var width = e.clientX - this.state.beginClientX;
-    if (width < this.state.maxwidth) {
+
+
+  usernameOnBlur = (e) => {
+    let newusername = e.target.value;
+    if (this.state.username != newusername) {
       this.setState({
-        left: '0',
-        width: '0'
+        username: newusername
       })
+      this.imageChange();
     }
   }
-
-  mousemoveEvent = (e) => {
-    if (this.state.mouseMoveStata) {
-      var width = e.clientX - this.state.beginClientX;
-
-      if (width > 0 && width <= this.state.maxwidth) {
-        this.setState({
-          left: width,
-          width
-        })
-      } else if (width > this.state.maxwidth) {
-        this.successFunction()
-      }
-    }
+  onLoginChange = (e, key) => {
+    let data = {};
+    data[key] = e.currentTarget.value
+    this.props.form.setFieldsValue(data);
+    this.setState(data)
   }
 
 
-  mousedownFn = (e) => {
+
+  imageChange = () => {
     this.setState({
-      mouseMoveStata: true,
-      beginClientX: e.clientX
+      now: Date.now()
     })
   }
 
-  successFunction = () => {
-    this.setState({
-      confirmWords: "验证通过",
-      left: this.state.maxwidth,
-      width: this.state.maxwidth,
-      comfirmbg: "/image/confirm.png",
-      confirmSuccess: true
-    })
-    setTimeout(() => {
 
-      if (this.state.confirmSuccess) {
-        this.setState({
-          showVerifySlider: false,
-          confirmWords: "按住滑块向右拖动验证登录",
-          comfirmbg: 'image/slider.png',
-          confirmSuccess: false
-        })
-        let params = this.props.form.getFieldsValue();
-        let { phone } = params;
-        sendSms({ phone })
-          .then(() => {
-            Toast("发送短信成功！");
-            this.startCdTimer();
-          })
-      }
-    }, 1000);
+  sendSms = () => {
+    let params = this.props.form.getFieldsValue();
+    let { username } = params;
+    sendSms({ phone: username })
+      .then(() => {
+        Toast("发送短信成功！");
+        this.startCdTimer();
+      })
   }
-
   verfyCodeClicked = () => {
     this.setState({
       showVerifySlider: true
@@ -170,6 +122,35 @@ class Page extends Component {
     })
 
   }
+  // 登录
+  handleSubmit = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.form.validateFields((err, userInfo) => {
+      if (err) {
+        return;
+      }
+
+      let username = userInfo.username;
+      let password = userInfo.password;
+      let imageCode = userInfo.imageCode;
+      forgetPassword(userInfo).then(data => {
+        Toast("重置成功！");
+        if (this.state.redirectLogin) {
+          this.props.history.push(routerConfig['login'].path);
+          return;
+        }
+        setTimeout(() => {
+          this.setState({
+            showBtnLoading: false
+          })
+          this.props.history.push(routerConfig['shop.shopAuth'].path);
+        }, 1000)
+
+      })
+
+    });
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -196,7 +177,6 @@ class Page extends Component {
                   <Input
                     onBlur={this.usernameOnBlur}
                     onChange={(e) => { this.onLoginChange(e, 'username') }}
-                    // prefix={<Icon type="user" style={{ color: "#999999" }} />}
                     placeholder="请填写后台账号"
                   />
                 )}
@@ -209,9 +189,7 @@ class Page extends Component {
                     ],
                   })(
                     <Input
-
                       onChange={(e) => { this.onLoginChange(e, 'password') }}
-                      // prefix={<Icon type="lock" theme="filled" style={{ color: "#999999" }} />}
                       type="password" placeholder="请填写重置密码"
                     />
                   )
@@ -219,7 +197,7 @@ class Page extends Component {
               </Form.Item>
               <div className="image-code">
                 <Form.Item className='qrcode-input'>
-                  {getFieldDecorator('imageCode', {
+                  {getFieldDecorator('verifyCode', {
                     rules: [
                       { required: true, message: '请输入验证码!' },
                       {
@@ -230,8 +208,7 @@ class Page extends Component {
                   })(
                     <Input
 
-                      onChange={(e) => { this.onLoginChange(e, 'imageCode') }}
-                      // prefix={<Icon type="safety-certificate" theme="filled" style={{ color: "#999999" }} />}
+                      onChange={(e) => { this.onLoginChange(e, 'verifyCode') }}
                       maxLength={4} type="text" placeholder="填写验证码"
                     />
                   )}
@@ -249,22 +226,23 @@ class Page extends Component {
                 loading={this.props.loading}
                 type="primary"
                 htmlType="submit"
+                onClick={this.sendSms}
                 className="login-form-button yellow-btn">
                 发送短信
               </Button>
               <Form.Item className='qrcode-input'>
-                {getFieldDecorator('imageCode', {
+                {getFieldDecorator('smsCode', {
                   rules: [
                     { required: true, message: '请输入验证码!' },
                     {
-                      pattern: new RegExp('^[0-9a-zA-Z]{4}$', 'g'),
+                      pattern: new RegExp("^[0-9]{6}$", 'g'),
                       message: '请输入正确的验证码'
                     }
                   ],
                 })(
                   <Input
 
-                    onChange={(e) => { this.onLoginChange(e, 'imageCode') }}
+                    onChange={(e) => { this.onLoginChange(e, 'smsCode') }}
                     // prefix={<Icon type="safety-certificate" theme="filled" style={{ color: "#999999" }} />}
                     maxLength={4} type="text" placeholder="填写6位短信验证码"
                   />
@@ -274,6 +252,7 @@ class Page extends Component {
                 loading={this.props.loading}
                 type="primary"
                 htmlType="submit"
+                onClick={this.handleSubmit}
                 className="login-form-button yellow-btn">
                 确认重置
               </Button>

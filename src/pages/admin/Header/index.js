@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { Link, NavLink } from 'react-router-dom';
 import { baseRoute, routerConfig } from '../../../config/router.config';
 import { withRouter } from 'react-router-dom';
-import { userLogout, getCacheUserInfo } from '../../../middleware/localStorage/login';
+import { userLogout, getCacheUserInfo,setCacheUserInfo } from '../../../middleware/localStorage/login';
 import '../../../assets/css/common.less'
 import './index.less';
 
@@ -36,6 +36,7 @@ class Header extends Component {
   }
 
   goChangePwd = () => {
+    // setCacheUserInfo(null)
     this.props.history.push(routerConfig['changepwd'].path);
   }
 
