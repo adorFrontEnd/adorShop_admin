@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import CommonPage from '../../components/common-page';
-import { Input, Select, Form, Button, Checkbox, Radio, DatePicker, Modal, Row, Col, Tree, InputNumber } from 'antd'
+import { Input, Select, Form, Button, Checkbox, Radio, DatePicker, Modal, Row, Col, Tree, Icon } from 'antd'
 import Toast from '../../utils/toast';
 import PictureWall from '../../components/upload/PictureWall';
 import { NavLink, Link } from 'react-router-dom';
@@ -23,14 +23,16 @@ class Page extends Component {
     isShowModal: false,
     status: null,
     categoryList: null,
-    selectRoleAuth: [],
+    selectedKeys: [],
     selectRoleSpecAuth: [],
     date: null,
     imageUrl: null,
-    classifyList: null
+    classifyList: null,
+    rawClassifyList: null,
+    shopOper: null
 
   }
-  componentWillMount() {
+  componentDidMount() {
     this.getClassify();
 
   }
@@ -43,20 +45,15 @@ class Page extends Component {
       if (err) {
         return;
       }
-      let { date, imageUrl } = this.state;
+      let { date, imageUrl, shopOper } = this.state;
+      let shopOperId = shopOper.id
       let deadlineStamp = dateUtil.getDayStartStamp(Date.parse(date));
-      let shopOperId = 1
       let params = { ...data, imageUrl, deadlineStamp, shopOperId }
-
-      // saveOrUpdate(params)
-      //   .then(() => {
-      //     Toast('创建门店成功');
-
-      //   })
-
-
-
-
+      saveOrUpdate(params)
+        .then(() => {
+          Toast('创建门店成功');
+          this.props.history.push('shopList');
+        })
     })
   }
   // 选择经营分类
@@ -64,6 +61,7 @@ class Page extends Component {
     this.setState({ isShowModal: true })
 
   }
+
   handleCancel = () => {
     this.setState({ isShowModal: false });
   }
@@ -79,12 +77,13 @@ class Page extends Component {
         if (!data) {
           this.setState({ status: 0 })
         }
+        this.setState({ shopOper: data, status: 1 })
       })
 
   }
   // 重置
-  clickReset = () => {
-    this.setState({ status: null })
+  resetClicked = () => {
+    this.props.form.resetFields();
   }
 
   // 获取所有分类
@@ -94,7 +93,7 @@ class Page extends Component {
     })
     searchList()
       .then(rawClassifyList => {
-        let classifyList = parseTree(rawClassifyList, true);
+        let classifyList = parseTree(rawClassifyList.data, true);
         this.setState({
           showClassifyLoading: false,
           classifyList
@@ -107,15 +106,11 @@ class Page extends Component {
       })
   }
 
-  onCheckedChange = (selectRoleAuth) => {
-    selectRoleAuth = selectRoleAuth.filter(item => item.indexOf('.') !== -1 || item == 'home')
-    this.setState({
-      selectRoleAuth
-    })
+  onCheckedChange = (selectedKeys) => {
+    this.setState({ selectedKeys })
   }
   onDateChange = (date, dateString) => {
-    this.setState({ date: dateString })
-
+    this.setState({ date: dateString });
   }
   uploadPic = (picList) => {
     let imageUrl = ''
@@ -131,10 +126,17 @@ class Page extends Component {
       imageUrl
     })
   }
-  /**渲染**********************************************************************************************************************************/
 
+  onCheck = (checkedKeys, info) => {
+    checkedKeys = checkedKeys.filter(item => item!= '0-0');
+    this.setState({
+      selectedKeys: checkedKeys
+    })
+  };
   render() {
     const { getFieldDecorator } = this.props.form;
+   
+    const { shopOper, selectedKeys } = this.state
     return (
       <CommonPage title={_title} description={_description} style={{ padding: '0' }}>
         <div style={{ display: 'flex', height: '30px', lineHeight: '30px' }}>
@@ -207,7 +209,8 @@ class Page extends Component {
 
                     ]
                   })(
-                    <DatePicker onChange={this.onDateChange} style={{ width: 170 }} showTime={true} placeholder={"请选择时间"} format="YYYY-MM-DD HH:mm:ss" />
+                    <DatePicker onChange={this.onDateChange} />
+                    // <DatePicker onChange={this.onDateChange} style={{ width: 170 }} showTime={true} placeholder={"请选择时间"} format="YYYY-MM-DD HH:mm:ss" />
                   )
                 }
                 <div style={{ color: 'red', marginLeft: '10px' }}>到达授权截止日期门店自动封禁</div>
@@ -223,7 +226,16 @@ class Page extends Component {
             >
               <div style={{ display: 'flex' }}>
                 <Button onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px' }} type='primary'>选择经营分类</Button>
-                <div>棉布</div>
+
+                {
+                  selectedKeys && selectedKeys.map((item, index) =>
+                    (
+                      <div key={index}  style={{marginRight:'5px',lineHeight:'32px'}}>
+                        {item}
+                      </div>
+                    )
+                  )
+                }
               </div>
 
             </Form.Item>
@@ -264,7 +276,7 @@ class Page extends Component {
             {
               this.state.status == 0 ?
                 <div>
-                  <div style={{ color: 'red', marginLeft: '13%' }}>该手机号尚未注册，请填写注册信息，点击保存按钮完成注册</div>
+                  <div style={{ color: 'red', marginLeft: '13%' }}>该手机号需在门店端完成注册后使用！</div>
 
                 </div> : null
 
@@ -276,8 +288,8 @@ class Page extends Component {
                   <div style={{ display: 'flex', padding: '10px', border: '1px solid #ccc', marginTop: '10px' }}>
                     <div style={{ width: '50px', height: '50px', background: "#ccc", marginRight: '10px' }}></div>
                     <div >
-                      <div>兰鹏飞</div>
-                      <div style={{ marginTop: '10px', color: '#ff6700' }}> 13880149364</div>
+                      <div>{shopOper && shopOper.nickname}</div>
+                      <div style={{ marginTop: '10px', color: '#ff6700' }}> {shopOper && shopOper.username}</div>
                     </div>
                   </div>
                 </div> : null
@@ -307,17 +319,23 @@ class Page extends Component {
               <div style={{ display: 'flex' }}>
                 <Input allowClear />
                 <Button type='primary' onClick={this.clickPhoneTest} style={{ margin: '0 10px' }}>搜索</Button>
-                <Button type='primary' onClick={this.clickReset}>重置</Button>
+                <Button type='primary' onClick={this.resetClicked}>重置</Button>
               </div>
-              <CategorySelection
-                selectRoleAuth={this.state.selectRoleAuth}
-                selectRoleSpecAuth={this.state.selectRoleSpecAuth}
-                onCheckedChange={this.onCheckedChange}
-                onSpecCheckedChange={this.onSpecCheckedChange}
-              />
+              <Tree
+                showIcon
+                checkedKeys={this.state.selectedKeys || []}
+                defaultExpandAll={false}
+                checkable
+                onSelect={this.onCheckedChange}
+                onCheck={this.onCheck}
+              >
+                <TreeNode
+                  title='所有分类'
+                >
+                  {this.renderTree()}
+                </TreeNode>
+              </Tree>
             </div>
-
-
             <div style={{ padding: '10px' }}>
               <div style={{ color: 'red', position: 'absolute', bottom: '10px' }}>一个商品最多选择5个分类，如选择了父类则其子类不可选择</div>
             </div>
@@ -333,6 +351,7 @@ class Page extends Component {
       </CommonPage >
     )
   }
+  /**渲染**********************************************************************************************************************************/
   renderTree = () => {
     let classifyList = this.state.classifyList;
     return this.renderTreeNode(classifyList);
@@ -343,24 +362,22 @@ class Page extends Component {
     let canDelete = !item.children || !item.children.length;
     return (
       <div className='flex-center'>
-
-        <InputNumber size="small" onChange={(value) => { this.onClassifySortChange(value, item.id) }} style={{ width: 80, marginRight: 10 }} min={0} max={9999999} value={item.sort} />
         <span className='margin-right'>{item.name}</span>
       </div>
     )
   }
 
   renderTreeNode = (data) => {
-    return data.map((item) => {
+    return data && data.map((item) => {
       if (item.children) {
         return (
-          <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.id}>
+          <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name}>
             {this.renderTreeNode(item.children)}
           </TreeNode>
         )
       }
       return (
-        <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.id} />
+        <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name} />
       )
     })
   }

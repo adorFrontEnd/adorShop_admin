@@ -4,7 +4,7 @@ import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
 import { SearchForm, SubmitForm } from '../../components/common-form';
 import dateUtil from '../../utils/dateUtil';
-import { shopList  } from '../../api/shopManage/shopList';
+import { shopList, updateStatus } from '../../api/shopManage/shopList';
 
 import { pagination } from '../../utils/pagination';
 import { connect } from 'react-redux';
@@ -54,34 +54,52 @@ class Page extends Component {
     })
   }
 
-
-
-
-
-
-
   // 表格相关列 
   columns = [
     { title: "门店名称", dataIndex: "name" },
     { title: "店招", dataIndex: "imageUrl", render: data => <span><img style={{ height: 40, width: 40 }} src={data} /></span> },
     { title: "地址", dataIndex: "address", render: data => data || '--' },
-    { title: "联系人", dataIndex: "roleName", render: data => data || '--' },
-    { title: "超管账号", dataIndex: "shopOperId", render: data => data || '--' },
+    { title: "联系人", dataIndex: "nickname", render: data => data || '--' },
+    { title: "超管账号", dataIndex: "username", render: data => data || '--' },
     { title: "经营范围", dataIndex: "categoryIds", render: data => data || '--' },
     { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
-    { title: "状态", dataIndex: "status", render: data => data || '--' },
+    // { title: "状态", dataIndex: "status", render: data => data == 1 ? "正常" : '封店' },
+    {
+      title: "状态",
+      render: (text, record, index) => (
+        <span>
+          {
+            record.status == 1 ? <span> 正常</span> : <span className='color-red'>已封</span>
+          }
+        </span>
+
+      )
+    },
     {
       title: '操作',
       render: (text, record, index) => (
         <span>
+
           <span>
-            <Link to={shopEditPath+`?record=${record.id}`} className='color-red'>编辑</Link>
+            {/* <Link to={shopEditPath + `?record=${record.id+record.username+record.nickname}`} className='color-red'>编辑</Link>
+             */}
+            <div onClick={() => this.goShopEdit(record)}>编辑</div>
             <Divider type="vertical" />
-            <Popconfirm
-              placement="topLeft" title='确认要封店吗？'
-              onConfirm={() => { this.deleteOper(record) }} >
-              <a size="small" className='color-red'>封店</a>
-            </Popconfirm>
+            {
+              record.status == 1 ?
+                <Popconfirm
+                  placement="topLeft" title='确认要封店吗？'
+                  onConfirm={() => { this.shopUpdateStatus(record) }} >
+                  <a size="small" className='color-red'>封店</a>
+                </Popconfirm>
+                :
+                <Popconfirm
+                  placement="topLeft" title='确认要恢复吗？'
+                  onConfirm={() => { this.shopUpdateStatus(record) }} >
+                  <a size="small" className='color-red'>恢复</a>
+                </Popconfirm>
+            }
+
           </span>
 
         </span>
@@ -99,36 +117,44 @@ class Page extends Component {
       showTableLoading: false
     })
   }
+  // 状态修改
+  shopUpdateStatus = (data) => {
+    let { id } = data;
+    updateStatus({ id })
+      .then(data => {
+        Toast('操作成功！');
+        this.getPageData();
+      })
+  }
   /******查询表单操作****************************************************************************************************************** */
   // 顶部查询表单
   //查询按钮点击事件
 
   searchClicked = () => {
     let params = this.props.form.getFieldsValue();
-    console.log(params)
-    // let { time, type, inputData } = params;
-    // if (time && time.length) {
-    //   let [startTime, stopTime] = time;
-    //   let startActivityTimeStamp = startTime ? dateUtil.getDayStartStamp(Date.parse(startTime)) : null;
-    //   let endActivityTimeStamp = stopTime ? dateUtil.getDayStopStamp(Date.parse(stopTime)) : null;
-    //   this.params = {
-    //     ...params,
-    //     startActivityTimeStamp,
-    //     endActivityTimeStamp,
-    //     time: null
-    //   }
-    // } else {
-    //   this.params = params;
-    // }
-    // this.getPageData();
+    let inputData = params.inputValue
+    let { inputKey, inputValue, ...data } = params;
+    let _data = {};
+    if (inputKey != 'null') {
+      _data.status = inputKey || null;
+    }
+    _data.inputValue = inputValue || null;
+    this.params = {
+      ...data,
+      ..._data
+    }
+
+    this.params.page = 1;
+    this.getPageData();
   }
   // 重置
   resetClicked = () => {
     this.props.form.resetFields();
   }
-  goShopCreated = (id) => {
-    let title = '创建门店'
-    this.props.changeRoute({ path: 'shop.shopAuth.shopCreated', title, parentTitle: '创建门店' });
+  goShopEdit = (data) => {
+    data = JSON.stringify(data)
+    window.localStorage.setItem('editData', data);
+    this.props.history.push('shopEdit');
   }
 
 
@@ -155,12 +181,12 @@ class Page extends Component {
                 <Form.Item>
                   {
                     getFieldDecorator('inputKey', {
-                      initialValue: "nicknameParam"
+                      initialValue: "null"
                     })(
                       <Select>
-                        <Select.Option value='nicknameParam'>全部状态</Select.Option>
-                        <Select.Option value='usernameParam'>正常</Select.Option>
-                        <Select.Option value='username'>已封</Select.Option>
+                        <Select.Option value='null'>全部状态</Select.Option>
+                        <Select.Option value='1'>正常</Select.Option>
+                        <Select.Option value='0'>已封</Select.Option>
                       </Select>
                     )
                   }
@@ -173,11 +199,11 @@ class Page extends Component {
                   {
                     getFieldDecorator('inputValue', {
                     })(
-                      <Input allowClear style={{ width: "240px" }} placeholder='商品名称/商品编号' onChange={this.boxInputDataChange}/>
+                      <Input allowClear style={{ width: "240px" }} placeholder='商品名称/商品编号' onChange={this.boxInputDataChange} />
                     )
                   }
                 </Form.Item>
-              
+
               </Form>
               <div style={{ minWidth: 370 }}>
                 <Button type='primary' className='normal margin0-20' onClick={() => { this.searchClicked() }}>查询</Button>

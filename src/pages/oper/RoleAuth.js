@@ -196,14 +196,14 @@ class Page extends Component {
   }
 
   onCheckedChange = (selectRoleAuth) => {
-    selectRoleAuth = selectRoleAuth.filter(item => item.indexOf('.') !== -1 || item == 'home')
+    selectRoleAuth = selectRoleAuth&&selectRoleAuth.filter(item => item.indexOf('.') !== -1 || item == 'home')
     this.setState({
       selectRoleAuth
     })
   }
 
   onSpecCheckedChange = (selectRoleSpecAuth) => {
-    selectRoleSpecAuth = selectRoleSpecAuth.filter(item => item != 'all')
+    selectRoleSpecAuth = selectRoleSpecAuth&&selectRoleSpecAuth.filter(item => item != 'all')
     this.setState({
       selectRoleSpecAuth
     })

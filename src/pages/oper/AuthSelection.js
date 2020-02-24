@@ -117,6 +117,7 @@ class AuthSelection extends Component {
   }
 
   onSpecAuthCheck = (checkedKeys, info) => {
+
     this.setState({
       selectRoleSpecAuth: checkedKeys
     })
@@ -157,7 +158,7 @@ class AuthSelection extends Component {
               }
             </TreeNode>
           </Tree>
-          <Tree
+          {/* <Tree
             showIcon
             checkedKeys={this.props.selectRoleSpecAuth || []}
             defaultExpandAll={false}
@@ -175,7 +176,7 @@ class AuthSelection extends Component {
                   null
               }
             </TreeNode>
-          </Tree>
+          </Tree> */}
         </div>
       )
     }

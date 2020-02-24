@@ -337,14 +337,6 @@ class AreaManage extends Component {
     this.showAddSubClassifyModal()
   }
 
-  // 删除分类
-  // deleteClassify = (id) => {
-  //   deleteProductCategory({ id })
-  //     .then(() => {
-  //       Toast('删除成功!');
-  //       this.getClassify();
-  //     })
-  // }
 
   /**渲染**********************************************************************************************************************************/
 

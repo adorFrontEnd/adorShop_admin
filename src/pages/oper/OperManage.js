@@ -200,12 +200,14 @@ class Page extends Component {
   searchClicked = () => {
     let params = this.props.form.getFieldsValue();
     let { inputKey, inputValue, ...data } = params;
+
     let _data = {};
     _data[inputKey] = inputValue || null;
     this.params = {
       ...data,
       ..._data
     }
+    console.log(this.params)
     this.params.page = 1;
     this.getPageData();
   }
@@ -234,11 +236,11 @@ class Page extends Component {
             >
               {
                 getFieldDecorator('inputKey', {
-                  initialValue: "nickname"
+                  initialValue: "nicknameParam"
                 })(
                   <Select>
-                    <Select.Option value='nickname'>账户名</Select.Option>
-                    <Select.Option value='username'>登录手机号</Select.Option>
+                    <Select.Option value='nicknameParam'>账户名</Select.Option>
+                    <Select.Option value='usernameParam'>登录手机号</Select.Option>
                   </Select>
                 )
               }

@@ -210,16 +210,9 @@ class Page extends Component {
   /**搜索，过滤 *******************************************************************************************************************************/
   searchClicked = () => {
     let params = this.props.form.getFieldsValue();
-
     let { inputKey, inputValue, ...data } = params;
-    let _data = {};
-    _data[inputKey] = inputValue || null;
-
-    this.params = {
-      ...data
-    }
     this.params.page = 1;
-    console.log(this.params)
+    this.params.inputData=params.name;
     this.getPageData();
   }
   // 重置
