@@ -24,7 +24,8 @@ class Page extends Component {
     status: null,
     categoryList: null,
     selectedKeys: [],
-    selectRoleSpecAuth: [],
+    checkedKeys: [],
+    categoryIds: [],
     date: null,
     imageUrl: null,
     classifyList: null,
@@ -45,10 +46,12 @@ class Page extends Component {
       if (err) {
         return;
       }
-      let { date, imageUrl, shopOper } = this.state;
-      let shopOperId = shopOper.id
+      let { date, imageUrl, shopOper, selectedKeys } = this.state;
+      let res = this.formatId(selectedKeys)
+      let categoryIds = res ? res : null
+      let shopOperId = shopOper ? shopOper.id : null
       let deadlineStamp = dateUtil.getDayStartStamp(Date.parse(date));
-      let params = { ...data, imageUrl, deadlineStamp, shopOperId }
+      let params = { ...data, imageUrl, deadlineStamp, shopOperId, categoryIds }
       saveOrUpdate(params)
         .then(() => {
           Toast('创建门店成功');
@@ -56,8 +59,25 @@ class Page extends Component {
         })
     })
   }
+  // 处理经营范围id
+  formatId = (arr) => {
+    if (!arr || !arr.length) {
+      return "";
+    }
+    let res
+    let result = []
+    arr.map(item => {
+      res = item.split('-')
+      result.push(res[1])
+    })
+
+    let resultStr = result.join();
+    return resultStr
+  }
+
   // 选择经营分类
   clickChoose = () => {
+
     this.setState({ isShowModal: true })
 
   }
@@ -66,7 +86,14 @@ class Page extends Component {
     this.setState({ isShowModal: false });
   }
   handleOk = () => {
-    this.setState({ isShowModal: false });
+    let { selectedKeys } = this.state;
+    let res
+    let result = []
+    selectedKeys.map(item => {
+      res = item.split('-')
+      result.push(res[0])
+    })
+    this.setState({ isShowModal: false, categoryList: result });
   }
   // 检测手机号
   clickPhoneTest = () => {
@@ -75,7 +102,8 @@ class Page extends Component {
     checkShopOper(this.params)
       .then(data => {
         if (!data) {
-          this.setState({ status: 0 })
+          this.setState({ status: 0 });
+          return
         }
         this.setState({ shopOper: data, status: 1 })
       })
@@ -128,15 +156,28 @@ class Page extends Component {
   }
 
   onCheck = (checkedKeys, info) => {
-    checkedKeys = checkedKeys.filter(item => item!= '0-0');
+    let { selectedKeys, categoryIds } = this.state
+    checkedKeys = checkedKeys.filter(item => item != '0-0');
     this.setState({
+      checkedKeys,
       selectedKeys: checkedKeys
+
     })
   };
+  delateClass = (item) => {
+    let { selectedKeys } = this.state;
+    for (var i = 0; i < selectedKeys.length; i++) {
+      if (selectedKeys[i] == item) {
+        selectedKeys.splice(i, 1);
+        break;
+      }
+    }
+    this.setState({ selectedKeys });
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
-   
-    const { shopOper, selectedKeys } = this.state
+
+    const { shopOper, selectedKeys, categoryList } = this.state
     return (
       <CommonPage title={_title} description={_description} style={{ padding: '0' }}>
         <div style={{ display: 'flex', height: '30px', lineHeight: '30px' }}>
@@ -228,9 +269,9 @@ class Page extends Component {
                 <Button onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px' }} type='primary'>选择经营分类</Button>
 
                 {
-                  selectedKeys && selectedKeys.map((item, index) =>
+                  categoryList && categoryList.map((item, index) =>
                     (
-                      <div key={index}  style={{marginRight:'5px',lineHeight:'32px'}}>
+                      <div key={index} style={{ marginRight: '5px', lineHeight: '32px' }}>
                         {item}
                       </div>
                     )
@@ -316,14 +357,25 @@ class Page extends Component {
         >
           <div style={{ display: 'flex', position: 'relative' }}>
             <div style={{ width: '50%', padding: '24px', borderRight: '1px solid #f2f2f2' }}>
-              <div style={{ display: 'flex' }}>
-                <Input allowClear />
-                <Button type='primary' onClick={this.clickPhoneTest} style={{ margin: '0 10px' }}>搜索</Button>
-                <Button type='primary' onClick={this.resetClicked}>重置</Button>
-              </div>
+              <Form>
+
+                <Form.Item>
+                  <div style={{ display: 'flex' }}>
+                    {
+                      getFieldDecorator('inputValue', {
+                      })(
+                        <Input allowClear style={{ width: "240px" }} onChange={this.boxInputDataChange} />
+                      )
+                    }
+                    <Button type='primary' onClick={this.clickPhoneTest} style={{ margin: '0 10px' }}>搜索</Button>
+                    <Button type='primary' onClick={this.resetClicked}>重置</Button>
+                  </div>
+
+                </Form.Item>
+              </Form>
               <Tree
                 showIcon
-                checkedKeys={this.state.selectedKeys || []}
+                checkedKeys={this.state.checkedKeys || []}
                 defaultExpandAll={false}
                 checkable
                 onSelect={this.onCheckedChange}
@@ -336,7 +388,21 @@ class Page extends Component {
                 </TreeNode>
               </Tree>
             </div>
-            <div style={{ padding: '10px' }}>
+            <div style={{ padding: '10px', width: '50%' }}>
+              <div >
+                {
+                  selectedKeys && selectedKeys.map((item, index) =>
+                    (
+                      <span key={index} className='classitem'>
+                        <span>{item}</span>
+                        <img src='/image/close.png' alt='' style={{ position: 'absolute', right: '10px' }} onClick={() => this.delateClass(item)} />
+                      </span>
+                    )
+                  )
+                }
+              </div>
+
+
               <div style={{ color: 'red', position: 'absolute', bottom: '10px' }}>一个商品最多选择5个分类，如选择了父类则其子类不可选择</div>
             </div>
           </div>
@@ -371,13 +437,14 @@ class Page extends Component {
     return data && data.map((item) => {
       if (item.children) {
         return (
-          <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name}>
+          <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name + '-' + item.id}>
+
             {this.renderTreeNode(item.children)}
           </TreeNode>
         )
       }
       return (
-        <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name} />
+        <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name + '-' + item.id} />
       )
     })
   }

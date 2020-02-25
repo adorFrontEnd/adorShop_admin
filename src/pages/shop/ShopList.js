@@ -60,16 +60,26 @@ class Page extends Component {
     { title: "店招", dataIndex: "imageUrl", render: data => <span><img style={{ height: 40, width: 40 }} src={data} /></span> },
     { title: "地址", dataIndex: "address", render: data => data || '--' },
     { title: "联系人", dataIndex: "nickname", render: data => data || '--' },
-    { title: "超管账号", dataIndex: "username", render: data => data || '--' },
-    { title: "经营范围", dataIndex: "categoryIds", render: data => data || '--' },
+    { title: "超管账号", dataIndex: "username", render: data => data|| '--' },
+    { title: "经营范围", dataIndex: "businessScope", render: data => data || '--' },
     { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
-    // { title: "状态", dataIndex: "status", render: data => data == 1 ? "正常" : '封店' },
     {
       title: "状态",
       render: (text, record, index) => (
         <span>
           {
-            record.status == 1 ? <span> 正常</span> : <span className='color-red'>已封</span>
+            record.status == 1 ?
+              <span>
+                {record.overStatus == 0 ?
+                  <span>正常</span> : null
+                }
+              </span>
+              :
+              <span className='color-red'>
+                 {record.overStatus == 0 ?
+                  <span>已封</span> : <span>已封（封店+过期）</span>
+                }
+              </span>
           }
         </span>
 
@@ -81,8 +91,6 @@ class Page extends Component {
         <span>
 
           <span>
-            {/* <Link to={shopEditPath + `?record=${record.id+record.username+record.nickname}`} className='color-red'>编辑</Link>
-             */}
             <div onClick={() => this.goShopEdit(record)}>编辑</div>
             <Divider type="vertical" />
             {
