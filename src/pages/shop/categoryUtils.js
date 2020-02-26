@@ -15,13 +15,13 @@ const getIdMap = (arr) => {
 
 
 const getTotalName = (id, idMap) => {
-  let item = idMap[id];
+  let item = idMap[id]; 
   let parentId = item.parentId;
   if (parentId == '0') {
     return item.name
   } else {
     let parent = idMap[parentId];
-    if (parentId == '0') {
+    if (parent.parentId == '0') {
       return `${parent.name}-${item.name}`;
     } else {
       let grandParentId = idMap[parentId]['parentId'];
@@ -32,10 +32,10 @@ const getTotalName = (id, idMap) => {
 }
 
 const getSelectArrTotalName = (selecdArr,idMap) => {
-  if (!arr || !arr.length) {
+  if (!selecdArr || !selecdArr.length) {
     return;
   }
-  let result = arr.map(id => {
+  let result = selecdArr.map(id => {
     let totalName = getTotalName(id, idMap);
     return {
       id, totalName

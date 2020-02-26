@@ -89,9 +89,8 @@ class Page extends Component {
       title: '操作',
       render: (text, record, index) => (
         <span>
-
           <span>
-            <div onClick={() => this.goShopEdit(record)}>编辑</div>
+            <span onClick={() => this.goShopEdit(record)} className='color-red'>编辑</span>
             <Divider type="vertical" />
             {
               record.status == 1 ?
@@ -229,7 +228,6 @@ class Page extends Component {
             pagination={this.state.pagination}
             dataSource={this.state.tableDataList}
             rowSelection={rowSelection}
-
           />
         </div>
 

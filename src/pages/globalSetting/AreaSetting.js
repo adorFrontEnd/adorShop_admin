@@ -67,7 +67,6 @@ class AreaManage extends Component {
 
   //保存分类排序
   saveClassifyOrder = () => {
-
     let order = this.formatSortSaveData(this.state.changedClassifySort);
     if (!order) {
       Toast('排序暂未修改！');
@@ -84,7 +83,6 @@ class AreaManage extends Component {
 
   //格式化保存分类的数据
   formatSortSaveData = (changedClassifySort) => {
-
     if (!changedClassifySort || !Object.keys(changedClassifySort).length) {
       return;
     }

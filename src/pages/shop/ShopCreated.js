@@ -9,8 +9,10 @@ import { baseRoute, routerConfig } from '../../config/router.config';
 import { saveOrUpdate, checkShopOper } from '../../api/shopManage/shopList';
 import { parseTree } from '../../utils/tree';
 import { searchList } from '../../api/setting/ClasssifySetting';
-import CategorySelection from './categorySelection';
+import {getIdMap,getSelectArrTotalName} from './categoryUtils'
 import './index.less';
+import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from "constants";
+import { from } from "rxjs";
 
 
 const _title = '创建门店';
@@ -23,6 +25,7 @@ class Page extends Component {
     isShowModal: false,
     status: null,
     categoryList: null,
+    category:null,
     selectedKeys: [],
     checkedKeys: [],
     categoryIds: [],
@@ -30,7 +33,8 @@ class Page extends Component {
     imageUrl: null,
     classifyList: null,
     rawClassifyList: null,
-    shopOper: null
+    shopOper: null,
+    idMap:null
 
   }
   componentDidMount() {
@@ -46,9 +50,8 @@ class Page extends Component {
       if (err) {
         return;
       }
-      let { date, imageUrl, shopOper, selectedKeys } = this.state;
-      let res = this.formatId(selectedKeys)
-      let categoryIds = res ? res : null
+      let { date, imageUrl, shopOper, checkedKeys } = this.state;
+      let categoryIds = checkedKeys.join()
       let shopOperId = shopOper ? shopOper.id : null
       let deadlineStamp = dateUtil.getDayStartStamp(Date.parse(date));
       let params = { ...data, imageUrl, deadlineStamp, shopOperId, categoryIds }
@@ -59,25 +62,10 @@ class Page extends Component {
         })
     })
   }
-  // 处理经营范围id
-  formatId = (arr) => {
-    if (!arr || !arr.length) {
-      return "";
-    }
-    let res
-    let result = []
-    arr.map(item => {
-      res = item.split('-')
-      result.push(res[1])
-    })
-
-    let resultStr = result.join();
-    return resultStr
-  }
+ 
 
   // 选择经营分类
   clickChoose = () => {
-
     this.setState({ isShowModal: true })
 
   }
@@ -86,14 +74,16 @@ class Page extends Component {
     this.setState({ isShowModal: false });
   }
   handleOk = () => {
-    let { selectedKeys } = this.state;
-    let res
+    let { checkedKeys, rawClassifyList } = this.state;
     let result = []
-    selectedKeys.map(item => {
-      res = item.split('-')
-      result.push(res[0])
+    rawClassifyList.map(item => {
+      checkedKeys.map(i => {
+        if (item.id == i) {
+          result.push(item.name)
+        }
+      })
     })
-    this.setState({ isShowModal: false, categoryList: result });
+    this.setState({ isShowModal: false, category: result });
   }
   // 检测手机号
   clickPhoneTest = () => {
@@ -122,9 +112,12 @@ class Page extends Component {
     searchList()
       .then(rawClassifyList => {
         let classifyList = parseTree(rawClassifyList.data, true);
+        let idMap=getIdMap(rawClassifyList.data)
         this.setState({
           showClassifyLoading: false,
-          classifyList
+          classifyList,
+          rawClassifyList: rawClassifyList.data,
+          idMap
         })
       })
       .catch(() => {
@@ -156,28 +149,33 @@ class Page extends Component {
   }
 
   onCheck = (checkedKeys, info) => {
-    let { selectedKeys, categoryIds } = this.state
+    let {categoryIds, rawClassifyList,idMap } = this.state;
+    
     checkedKeys = checkedKeys.filter(item => item != '0-0');
+    let res=getSelectArrTotalName(checkedKeys,idMap);
     this.setState({
       checkedKeys,
-      selectedKeys: checkedKeys
-
+      categoryList: res
     })
   };
   delateClass = (item) => {
-    let { selectedKeys } = this.state;
-    for (var i = 0; i < selectedKeys.length; i++) {
-      if (selectedKeys[i] == item) {
-        selectedKeys.splice(i, 1);
+    let { categoryList,checkedKeys } = this.state;
+    for (var i = 0; i < categoryList.length; i++) {
+      if (categoryList[i] == item) {
+        categoryList.splice(i, 1);
         break;
       }
     }
-    this.setState({ selectedKeys });
+    checkedKeys.map(id=>{
+      if(id==item.id){
+        checkedKeys.splice(i, 1);
+      }
+    })
+    this.setState({ categoryList,checkedKeys });
   }
   render() {
     const { getFieldDecorator } = this.props.form;
-
-    const { shopOper, selectedKeys, categoryList } = this.state
+    const { shopOper, category, categoryList } = this.state
     return (
       <CommonPage title={_title} description={_description} style={{ padding: '0' }}>
         <div style={{ display: 'flex', height: '30px', lineHeight: '30px' }}>
@@ -269,7 +267,7 @@ class Page extends Component {
                 <Button onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px' }} type='primary'>选择经营分类</Button>
 
                 {
-                  categoryList && categoryList.map((item, index) =>
+                  category && category.map((item, index) =>
                     (
                       <div key={index} style={{ marginRight: '5px', lineHeight: '32px' }}>
                         {item}
@@ -391,10 +389,10 @@ class Page extends Component {
             <div style={{ padding: '10px', width: '50%' }}>
               <div >
                 {
-                  selectedKeys && selectedKeys.map((item, index) =>
+                  categoryList && categoryList.map((item, index) =>
                     (
                       <span key={index} className='classitem'>
-                        <span>{item}</span>
+                        <span>{item.totalName}</span>
                         <img src='/image/close.png' alt='' style={{ position: 'absolute', right: '10px' }} onClick={() => this.delateClass(item)} />
                       </span>
                     )
@@ -403,7 +401,7 @@ class Page extends Component {
               </div>
 
 
-              <div style={{ color: 'red', position: 'absolute', bottom: '10px' }}>一个商品最多选择5个分类，如选择了父类则其子类不可选择</div>
+              <div style={{ color: 'red' }}>一个商品最多选择5个分类，如选择了父类则其子类不可选择</div>
             </div>
           </div>
 
@@ -437,14 +435,14 @@ class Page extends Component {
     return data && data.map((item) => {
       if (item.children) {
         return (
-          <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name + '-' + item.id}>
+          <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.id}>
 
             {this.renderTreeNode(item.children)}
           </TreeNode>
         )
       }
       return (
-        <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.name + '-' + item.id} />
+        <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.id} />
       )
     })
   }
