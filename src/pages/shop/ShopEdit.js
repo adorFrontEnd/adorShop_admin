@@ -5,7 +5,7 @@ import Toast from '../../utils/toast';
 import PictureWall from '../../components/upload/PictureWall';
 import { NavLink, Link } from 'react-router-dom';
 import { baseRoute, routerConfig } from '../../config/router.config';
-import {getIdMap,getSelectArrTotalName} from './categoryUtils'
+import { getIdMap, getSelectArrTotalName } from '../../components/category/categoryUtils'
 import { saveOrUpdate, checkShopOper } from '../../api/shopManage/shopList';
 import { searchList } from '../../api/setting/ClasssifySetting';
 import { parseTree } from '../../utils/tree';

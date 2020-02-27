@@ -15,7 +15,7 @@ const getIdMap = (arr) => {
 
 
 const getTotalName = (id, idMap) => {
-  let item = idMap[id]; 
+  let item = idMap[id];
   let parentId = item.parentId;
   if (parentId == '0') {
     return item.name
@@ -31,7 +31,7 @@ const getTotalName = (id, idMap) => {
   }
 }
 
-const getSelectArrTotalName = (selecdArr,idMap) => {
+const getSelectArrTotalName = (selecdArr, idMap) => {
   if (!selecdArr || !selecdArr.length) {
     return;
   }
@@ -44,7 +44,16 @@ const getSelectArrTotalName = (selecdArr,idMap) => {
   return result;
 }
 
+const getCheckedNamesByIds = (idMap, ids, seprator) => {
+  if (!idMap || !ids || !ids.length) {
+    return
+  }
+  let names = ids.map(id => idMap[id]['name']);
+  return seprator ? names.join(seprator) : names;
+}
+
 export {
   getSelectArrTotalName,
-  getIdMap
+  getIdMap,
+  getCheckedNamesByIds
 }

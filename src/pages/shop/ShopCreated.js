@@ -7,16 +7,10 @@ import { NavLink, Link } from 'react-router-dom';
 import dateUtil from '../../utils/dateUtil';
 import { baseRoute, routerConfig } from '../../config/router.config';
 import { saveOrUpdate, checkShopOper } from '../../api/shopManage/shopList';
-import { parseTree } from '../../utils/tree';
-import { searchList } from '../../api/setting/ClasssifySetting';
-import {getIdMap,getSelectArrTotalName} from './categoryUtils'
+import CategoryModal from "../../components/category/CategoryModal";
 import './index.less';
-import { SSL_OP_DONT_INSERT_EMPTY_FRAGMENTS } from "constants";
-import { from } from "rxjs";
-
 
 const _title = '创建门店';
-const { TreeNode } = Tree;
 const _description = "";
 const shopListPath = routerConfig["shop.shopAuth.shopList"].path;
 class Page extends Component {
@@ -24,37 +18,30 @@ class Page extends Component {
   state = {
     isShowModal: false,
     status: null,
-    categoryList: null,
-    category:null,
-    selectedKeys: [],
-    checkedKeys: [],
+    category: null,
     categoryIds: [],
     date: null,
-    imageUrl: null,
-    classifyList: null,
-    rawClassifyList: null,
-    shopOper: null,
-    idMap:null
-
+    imageUrl: null, 
+    shopOper: null
   }
-  componentDidMount() {
-    this.getClassify();
 
+  componentDidMount() {
+  
   }
 
   params = {
 
   }
+
   shopCereated = () => {
     this.props.form.validateFields((err, data) => {
       if (err) {
         return;
       }
-      let { date, imageUrl, shopOper, checkedKeys } = this.state;
-      let categoryIds = checkedKeys.join()
+      let { date, imageUrl, shopOper, categoryIds } = this.state;
       let shopOperId = shopOper ? shopOper.id : null
       let deadlineStamp = dateUtil.getDayStartStamp(Date.parse(date));
-      let params = { ...data, imageUrl, deadlineStamp, shopOperId, categoryIds }
+      let params = { ...data, imageUrl, deadlineStamp, shopOperId, categoryIds:categoryIds.join() }
       saveOrUpdate(params)
         .then(() => {
           Toast('创建门店成功');
@@ -62,29 +49,21 @@ class Page extends Component {
         })
     })
   }
- 
 
   // 选择经营分类
   clickChoose = () => {
     this.setState({ isShowModal: true })
-
   }
 
-  handleCancel = () => {
-    this.setState({ isShowModal: false });
+  handleOk = (params) => {
+    let { categoryIds, category } = params;
+    this.setState({ isShowModal: false, category });
   }
-  handleOk = () => {
-    let { checkedKeys, rawClassifyList } = this.state;
-    let result = []
-    rawClassifyList.map(item => {
-      checkedKeys.map(i => {
-        if (item.id == i) {
-          result.push(item.name)
-        }
-      })
-    })
-    this.setState({ isShowModal: false, category: result });
+
+  hideCModal = ()=>{
+    this.setState({ isShowModal: false })
   }
+
   // 检测手机号
   clickPhoneTest = () => {
     let params = this.props.form.getFieldsValue();
@@ -99,37 +78,8 @@ class Page extends Component {
       })
 
   }
-  // 重置
-  resetClicked = () => {
-    this.props.form.resetFields();
-  }
+ 
 
-  // 获取所有分类
-  getClassify = () => {
-    this.setState({
-      showClassifyLoading: true
-    })
-    searchList()
-      .then(rawClassifyList => {
-        let classifyList = parseTree(rawClassifyList.data, true);
-        let idMap=getIdMap(rawClassifyList.data)
-        this.setState({
-          showClassifyLoading: false,
-          classifyList,
-          rawClassifyList: rawClassifyList.data,
-          idMap
-        })
-      })
-      .catch(() => {
-        this.setState({
-          showClassifyLoading: false
-        })
-      })
-  }
-
-  onCheckedChange = (selectedKeys) => {
-    this.setState({ selectedKeys })
-  }
   onDateChange = (date, dateString) => {
     this.setState({ date: dateString });
   }
@@ -148,34 +98,10 @@ class Page extends Component {
     })
   }
 
-  onCheck = (checkedKeys, info) => {
-    let {categoryIds, rawClassifyList,idMap } = this.state;
-    
-    checkedKeys = checkedKeys.filter(item => item != '0-0');
-    let res=getSelectArrTotalName(checkedKeys,idMap);
-    this.setState({
-      checkedKeys,
-      categoryList: res
-    })
-  };
-  delateClass = (item) => {
-    let { categoryList,checkedKeys } = this.state;
-    for (var i = 0; i < categoryList.length; i++) {
-      if (categoryList[i] == item) {
-        categoryList.splice(i, 1);
-        break;
-      }
-    }
-    checkedKeys.map(id=>{
-      if(id==item.id){
-        checkedKeys.splice(i, 1);
-      }
-    })
-    this.setState({ categoryList,checkedKeys });
-  }
+  
   render() {
     const { getFieldDecorator } = this.props.form;
-    const { shopOper, category, categoryList } = this.state
+    const { shopOper, category } = this.state
     return (
       <CommonPage title={_title} description={_description} style={{ padding: '0' }}>
         <div style={{ display: 'flex', height: '30px', lineHeight: '30px' }}>
@@ -265,16 +191,7 @@ class Page extends Component {
             >
               <div style={{ display: 'flex' }}>
                 <Button onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px' }} type='primary'>选择经营分类</Button>
-
-                {
-                  category && category.map((item, index) =>
-                    (
-                      <div key={index} style={{ marginRight: '5px', lineHeight: '32px' }}>
-                        {item}
-                      </div>
-                    )
-                  )
-                }
+                {category}
               </div>
 
             </Form.Item>
@@ -338,114 +255,24 @@ class Page extends Component {
         </div>
 
 
-        <Modal
-          visible={this.state.isShowModal}
-          title="商品分类"
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="back" onClick={this.handleCancel}>
-              取消
-            </Button>,
-            <Button key="submit" type="primary" onClick={this.handleOk}>
-              确定
-            </Button>
-          ]}
-          width='800px'
-        >
-          <div style={{ display: 'flex', position: 'relative' }}>
-            <div style={{ width: '50%', padding: '24px', borderRight: '1px solid #f2f2f2' }}>
-              <Form>
-
-                <Form.Item>
-                  <div style={{ display: 'flex' }}>
-                    {
-                      getFieldDecorator('inputValue', {
-                      })(
-                        <Input allowClear style={{ width: "240px" }} onChange={this.boxInputDataChange} />
-                      )
-                    }
-                    <Button type='primary' onClick={this.clickPhoneTest} style={{ margin: '0 10px' }}>搜索</Button>
-                    <Button type='primary' onClick={this.resetClicked}>重置</Button>
-                  </div>
-
-                </Form.Item>
-              </Form>
-              <Tree
-                showIcon
-                checkedKeys={this.state.checkedKeys || []}
-                defaultExpandAll={false}
-                checkable
-                onSelect={this.onCheckedChange}
-                onCheck={this.onCheck}
-              >
-                <TreeNode
-                  title='所有分类'
-                >
-                  {this.renderTree()}
-                </TreeNode>
-              </Tree>
-            </div>
-            <div style={{ padding: '10px', width: '50%' }}>
-              <div >
-                {
-                  categoryList && categoryList.map((item, index) =>
-                    (
-                      <span key={index} className='classitem'>
-                        <span>{item.totalName}</span>
-                        <img src='/image/close.png' alt='' style={{ position: 'absolute', right: '10px' }} onClick={() => this.delateClass(item)} />
-                      </span>
-                    )
-                  )
-                }
-              </div>
-
-
-              <div style={{ color: 'red' }}>一个商品最多选择5个分类，如选择了父类则其子类不可选择</div>
-            </div>
-          </div>
-
-        </Modal>
         <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
           <Button className='save-btn' type='primary' onClick={this.shopCereated} disabled={this.state.status == 0}>保存</Button>
           <NavLink to={shopListPath}>
             <Button className='save-btn' type='primary'>返回</Button>
           </NavLink>
         </div>
+
+        <CategoryModal
+          categoryIds = {this.state.categoryIds}
+          onOk={this.handleOk}
+          onCancel={this.hideCModal}
+          visible={this.state.isShowModal}
+        />
       </CommonPage >
     )
   }
-  /**渲染**********************************************************************************************************************************/
-  renderTree = () => {
-    let classifyList = this.state.classifyList;
-    return this.renderTreeNode(classifyList);
-  }
 
-  getTreeNodeTitle = (item) => {
-    let hasChildren = !!item.children;
-    let canDelete = !item.children || !item.children.length;
-    return (
-      <div className='flex-center'>
-        <span className='margin-right'>{item.name}</span>
-      </div>
-    )
-  }
-
-  renderTreeNode = (data) => {
-    return data && data.map((item) => {
-      if (item.children) {
-        return (
-          <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.id}>
-
-            {this.renderTreeNode(item.children)}
-          </TreeNode>
-        )
-      }
-      return (
-        <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.id} />
-      )
-    })
-  }
+  
 }
 
 export default Form.create()(Page);
