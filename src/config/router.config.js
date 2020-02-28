@@ -29,7 +29,7 @@ const routerConfigArr = [
   {
     route_name: "shop",
     title: "门店管理",
-    icon: "user",
+    icon: "unordered-list",
     moduleAuth: true
   },
   {
@@ -38,7 +38,7 @@ const routerConfigArr = [
     loginRequired: true,
     moduleAuth: true,
     title: "门店管理",
-    icon: "solution"
+    icon: "unordered-list"
   },
   {
     route_name: "shop.shopAuth.shopList",
@@ -46,13 +46,13 @@ const routerConfigArr = [
     loginRequired: true,
     moduleAuth: true,
     title: "门店列表",
-    icon: "solution"
+    icon: "unordered-list"
   },
   {
     route_name: "shop.shopAuth.shopCreated",
     path: baseRoute + "/shop/shopCreated",
     loginRequired: true,
-    moduleAuth: true,
+    moduleAuth: false,
     title: "创建门店",
     icon: "solution"
   },
@@ -60,14 +60,14 @@ const routerConfigArr = [
     route_name: "shop.shopAuth.shopEdit",
     path: baseRoute + "/shop/shopEdit",
     loginRequired: true,
-    moduleAuth: true,
+    moduleAuth: false,
     title: "编辑门店",
     icon: "solution"
   },
   {
     route_name: "oper",
     title: "操作员管理",
-    icon: "user",
+    icon: "safety-certificate",
     moduleAuth: true
   },
   {
@@ -76,7 +76,7 @@ const routerConfigArr = [
     loginRequired: true,
     moduleAuth: true,
     title: "账号管理",
-    icon: "team"
+    icon: "user"
   },
   {
     route_name: "oper.operManage.operManage",
@@ -84,7 +84,7 @@ const routerConfigArr = [
     loginRequired: true,
     moduleAuth: true,
     title: "账号管理",
-    icon: "team"
+    icon: "user"
   },
   {
     route_name: "oper.roleAuth",
@@ -105,7 +105,7 @@ const routerConfigArr = [
   {
     route_name: "globalSetting",
     title: "全局设置",
-    icon: "user",
+    icon: "setting",
     moduleAuth: true
   },
   {
@@ -114,7 +114,7 @@ const routerConfigArr = [
     loginRequired: true,
     moduleAuth: true,
     title: "地区设置",
-    icon: "team"
+    icon: "environment"
   },
   {
     route_name: "globalSetting.areaSetting.areaDeploy",
@@ -122,7 +122,7 @@ const routerConfigArr = [
     loginRequired: true,
     moduleAuth: true,
     title: "地区配置",
-    icon: "team"
+    icon: "environment"
   },
   {
     route_name: "globalSetting.classsifySetting",

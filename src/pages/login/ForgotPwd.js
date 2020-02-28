@@ -108,7 +108,6 @@ class Page extends Component {
   }
 
   submitPassword = () => {
-
     this.props.form.validateFields((err, data) => {
       if (err) {
         return;
@@ -244,7 +243,7 @@ class Page extends Component {
 
                     onChange={(e) => { this.onLoginChange(e, 'smsCode') }}
                     // prefix={<Icon type="safety-certificate" theme="filled" style={{ color: "#999999" }} />}
-                    maxLength={4} type="text" placeholder="填写6位短信验证码"
+                    maxLength={6} type="text" placeholder="填写6位短信验证码"
                   />
                 )}
               </Form.Item>

@@ -76,7 +76,7 @@ class Page extends Component {
             this.setState({
               showBtnLoading: false
             })
-            this.props.history.push(routerConfig['shop.shopAuth'].path);
+            this.props.history.push(routerConfig['shop.shopAuth.shopList'].path);
           }, 1000)
 
         })
@@ -107,8 +107,7 @@ class Page extends Component {
               {
                 getFieldDecorator('oldPassword', {
                   rules: [
-                    { required: true, message: '请输入原始密码!' },
-                    { pattern: /^[A-Za-z0-9]{0,6}$/, message: '6位字符，包含数字和字母!' }
+                    { required: true, message: '请输入原始密码!' }
                   ],
                 })(
                   <Input.Password
@@ -126,7 +125,6 @@ class Page extends Component {
                   ],
                 })(
                   <Input.Password
-
                     type="password" placeholder="请输入新密码"
                   />
                 )
@@ -141,7 +139,6 @@ class Page extends Component {
                   ],
                 })(
                   <Input.Password
-
                     type="password" placeholder="重复新密码"
                   />
                 )

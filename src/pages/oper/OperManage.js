@@ -12,10 +12,9 @@ const _title = "账号管理";
 const _description = "";
 
 class Page extends Component {
-
   state = {
 
-    tableDataList:null,
+    tableDataList: null,
     editFormValue: null,
     newItemModalVisible: false,
     selectOper: null,
@@ -64,7 +63,7 @@ class Page extends Component {
           this.setState({
             roleList
           })
-          this.newItemFormList[2].optionList = roleList.filter(item => item.name != '超级管理员');;
+          this.newItemFormList[2].optionList = roleList.filter(item => item.name != '超级管理员');
         }
       })
   }
@@ -78,6 +77,7 @@ class Page extends Component {
   _hideTableLoading = () => {
     this.setState({
       showTableLoading: false
+
     })
   }
   // 表格相关列 
@@ -92,18 +92,18 @@ class Page extends Component {
         <span>
           {
             record.roleName != '超级管理员' ?
-                <span>
               <span>
-                <a onClick={() => { this.showAcountModal(record) }}>编辑</a>
-                <Divider type="vertical" />
-                <Popconfirm
-                  placement="topLeft" title='确认要删除吗？'
-                  onConfirm={() => { this.deleteOper(record) }} >
-                  <a size="small" className='color-red'>删除</a>
-                </Popconfirm>
-              </span>
-         
-        </span> : '--'
+                <span>
+                  <a onClick={() => { this.showAcountModal(record) }}>编辑</a>
+                  <Divider type="vertical" />
+                  <Popconfirm
+                    placement="topLeft" title='确认要删除吗？'
+                    onConfirm={() => { this.deleteOper(record) }} >
+                    <a size="small" className='color-red'>删除</a>
+                  </Popconfirm>
+                </span>
+
+              </span> : '--'
           }
         </span>
       )
@@ -221,130 +221,130 @@ class Page extends Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <CommonPage title={_title} description={_description} >
-      <div style={{padding:'10px'}}>
-      <div>
-          <Button onClick={() => { this.showAcountModal() }} style={{ width: 100 }} type='primary'>创建账号</Button>
-        </div>
-        <div className='margin10-0'>
-          <Form layout='inline'>
-            <Form.Item
-              field="inputKey"
-              labelCol={{ span: 6 }}
-              wrapperCol={{ span: 18 }}
-              label='账号：'
-              style={{ width: 200 }}
-            >
-              {
-                getFieldDecorator('inputKey', {
-                  initialValue: "nicknameParam"
-                })(
-                  <Select>
-                    <Select.Option value='nicknameParam'>账户名</Select.Option>
-                    <Select.Option value='usernameParam'>登录手机号</Select.Option>
-                  </Select>
-                )
-              }
-            </Form.Item>
-
-            <Form.Item
-              field="inputValue"
-              labelCol={{ span: 6 }}
-              wrapperCol={{ span: 18 }}
-            >
-              {
-                getFieldDecorator('inputValue', {
-                })(
-                  <Input allowClear style={{ width: "240px" }} />
-                )
-              }
-            </Form.Item>
-
-            <Form.Item
-              field="roleId"
-              labelCol={{ span: 6 }}
-              wrapperCol={{ span: 18 }}
-              label='账号角色：'
-              style={{ width: 300 }}
-            >
-              {
-                getFieldDecorator('roleId', {
-                  initialValue: null
-                })(
-                  <Select>
-                    <Select.Option value={null}>请选择角色</Select.Option>
-                    {
-                      this.state.roleList && this.state.roleList.length ?
-                        this.state.roleList.map(item =>
-                          <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
-                        )
-                        : null
-
-                    }
-                  </Select>
-                )
-              }
-            </Form.Item>
-
-          </Form>
-        </div>
-        <div className='margin10-0'>
-          <Button type='primary' className='normal' onClick={this.searchClicked}>筛选</Button>
-          <Button className='margin-left' onClick={this.resetClicked}>清除所有筛选</Button>
-        </div>
-        <Table
-          indentSize={10}
-          rowKey="id"
-          columns={this.columns}
-          loading={this.state.showTableLoading}
-          pagination={this.state.pagination}
-          dataSource={this.state.tableDataList}
-        />
-
-        <Modal maskClosable={false}
-          title="添加/修改账号"
-          visible={this.state.newItemModalVisible}
-          footer={null}
-          onCancel={this._hideNewItemModal}
-          className='noPadding'
-        >
-          <SubmitForm
-            clearWhenHide={true}
-            showForm={this.state.newItemModalVisible}
-            setFormValue={this.state.editFormValue}
-            formItemList={this.newItemFormList}
-            saveClicked={this.newItemModalSaveClicked}
-            cancelClicked={this._hideNewItemModal}
-          >
-          </SubmitForm>
-        </Modal>
-
-        <Modal maskClosable={false}
-          title="重置密码"
-          visible={this.state.passwordModalVisible}
-          onCancel={this.hidePasswordModal}
-          onOk={this.passwordModalConfirm}
-          className='noPadding'
-        >
+        <div style={{ padding: '10px' }}>
           <div>
-
+            <Button onClick={() => { this.showAcountModal() }} style={{ width: 100 }} type='primary'>创建账号</Button>
           </div>
+          <div className='margin10-0'>
+            <Form layout='inline'>
+              <Form.Item
+                field="inputKey"
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+                label='账号：'
+                style={{ width: 200 }}
+              >
+                {
+                  getFieldDecorator('inputKey', {
+                    initialValue: "nicknameParam"
+                  })(
+                    <Select>
+                      <Select.Option value='nicknameParam'>账户名</Select.Option>
+                      <Select.Option value='usernameParam'>登录手机号</Select.Option>
+                    </Select>
+                  )
+                }
+              </Form.Item>
 
-          <Row className='line-height40'>
-            <Col span={7} className='text-right'>
-              <span className='label-color label-required'>填写密码：</span>
-            </Col>
-            <Col span={10}>
-              <Input
-                value={this.state.password}
-                onChange={this.passwordOnChange}
-                placeholder='请填入至少6位数的密码'
-              />
-            </Col>
-          </Row>
+              <Form.Item
+                field="inputValue"
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+              >
+                {
+                  getFieldDecorator('inputValue', {
+                  })(
+                    <Input allowClear style={{ width: "240px" }} />
+                  )
+                }
+              </Form.Item>
 
-        </Modal>
+              <Form.Item
+                field="roleId"
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 18 }}
+                label='账号角色：'
+                style={{ width: 300 }}
+              >
+                {
+                  getFieldDecorator('roleId', {
+                    initialValue: null
+                  })(
+                    <Select>
+                      <Select.Option value={null}>请选择角色</Select.Option>
+                      {
+                        this.state.roleList && this.state.roleList.length ?
+                          this.state.roleList.map(item =>
+                            <Select.Option key={item.id} value={item.id}>{item.name}</Select.Option>
+                          )
+                          : null
 
-      </div>
+                      }
+                    </Select>
+                  )
+                }
+              </Form.Item>
+
+            </Form>
+          </div>
+          <div className='margin10-0'>
+            <Button type='primary' className='normal' onClick={this.searchClicked}>筛选</Button>
+            <Button className='margin-left' onClick={this.resetClicked}>清除所有筛选</Button>
+          </div>
+          <Table
+            indentSize={10}
+            rowKey="id"
+            columns={this.columns}
+            loading={this.state.showTableLoading}
+            pagination={this.state.pagination}
+            dataSource={this.state.tableDataList}
+          />
+
+          <Modal maskClosable={false}
+            title="添加/修改账号"
+            visible={this.state.newItemModalVisible}
+            footer={null}
+            onCancel={this._hideNewItemModal}
+            className='noPadding'
+          >
+            <SubmitForm
+              clearWhenHide={true}
+              showForm={this.state.newItemModalVisible}
+              setFormValue={this.state.editFormValue}
+              formItemList={this.newItemFormList}
+              saveClicked={this.newItemModalSaveClicked}
+              cancelClicked={this._hideNewItemModal}
+            >
+            </SubmitForm>
+          </Modal>
+
+          <Modal maskClosable={false}
+            title="重置密码"
+            visible={this.state.passwordModalVisible}
+            onCancel={this.hidePasswordModal}
+            onOk={this.passwordModalConfirm}
+            className='noPadding'
+          >
+            <div>
+
+            </div>
+
+            <Row className='line-height40'>
+              <Col span={7} className='text-right'>
+                <span className='label-color label-required'>填写密码：</span>
+              </Col>
+              <Col span={10}>
+                <Input
+                  value={this.state.password}
+                  onChange={this.passwordOnChange}
+                  placeholder='请填入至少6位数的密码'
+                />
+              </Col>
+            </Row>
+
+          </Modal>
+
+        </div>
       </CommonPage >)
   }
 }

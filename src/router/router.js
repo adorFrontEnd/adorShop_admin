@@ -33,7 +33,7 @@ export default class GlobalRouter extends React.Component {
         <Switch>
           <Route exact={true} path="/" render={() => (
             isUserLogin() ?
-              <Redirect to={routerConfig["home"].path} />
+              <Redirect to={routerConfig["shop.shopAuth.shopList"].path} />
               :
               <Redirect to={{ pathname: routerConfig["login"].path }} />
           )} />

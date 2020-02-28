@@ -36,7 +36,7 @@ export default class Login extends Component {
 
     userLogin(params).then((res) => {
 
-      if (res ) {
+      if (res) {
         message.success("登录成功！");
         setCacheAccountList({ username: params.username, password: params.password, loginAccounts: res.loginAccounts });
         setCacheUserInfo(res)
@@ -47,7 +47,7 @@ export default class Login extends Component {
           return;
         }
         setTimeout(() => {
-          this.props.history.push(routerConfig['shop.shopAuth'].path);
+          this.props.history.push(routerConfig['shop.shopAuth.shopList'].path);
           this.setState({
             showBtnLoading: false
           })
@@ -88,6 +88,9 @@ export default class Login extends Component {
           <div style={{ width: "45%", marginLeft: "12px" }}>
             <img src='/image/bg.png' style={{ maxWidth: "100%" }} />
           </div>
+          {/* <div style={{ width: "45%", marginLeft: "12px",background:`url('/image/bg.png') no-repeat`,backgroundSize:'contain'}}>
+            
+          </div> */}
         </div>
       </div>
     )

@@ -5,7 +5,7 @@ import CommonPage from '../../components/common-page';
 import { SearchForm, SubmitForm } from '../../components/common-form';
 import dateUtil from '../../utils/dateUtil';
 import { shopList, updateStatus } from '../../api/shopManage/shopList';
-
+import { parseUrl, getReactRouterParams } from '../../utils/urlUtils';
 import { pagination } from '../../utils/pagination';
 import { connect } from 'react-redux';
 import { changeRoute } from '../../store/actions/route-actions';
@@ -16,7 +16,6 @@ const _description = "";
 const shopEditPath = routerConfig["shop.shopAuth.shopEdit"].path;
 const shopCreatedPath = routerConfig["shop.shopAuth.shopCreated"].path;
 class Page extends Component {
-
   state = {
     tableDataList: null,
     selectedRowKeys: null,
@@ -44,7 +43,6 @@ class Page extends Component {
         this.params.size = pageSize
         _this.getPageData();
       })
-
       this.setState({
         tableDataList: res.data,
         pagination: _pagination
@@ -60,7 +58,7 @@ class Page extends Component {
     { title: "店招", dataIndex: "imageUrl", render: data => <span><img style={{ height: 40, width: 40 }} src={data} /></span> },
     { title: "地址", dataIndex: "address", render: data => data || '--' },
     { title: "联系人", dataIndex: "nickname", render: data => data || '--' },
-    { title: "超管账号", dataIndex: "username", render: data => data|| '--' },
+    { title: "超管账号", dataIndex: "username", render: data => data || '--' },
     { title: "经营范围", dataIndex: "businessScope", render: data => data || '--' },
     { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
     {
@@ -75,14 +73,13 @@ class Page extends Component {
                 }
               </span>
               :
-              <span className='color-red'>
-                 {record.overStatus == 0 ?
+              <span style={{ color: '#ff8716' }}>
+                {record.overStatus == 0 ?
                   <span>已封</span> : <span>已封（封店+过期）</span>
                 }
               </span>
           }
         </span>
-
       )
     },
     {
@@ -90,23 +87,22 @@ class Page extends Component {
       render: (text, record, index) => (
         <span>
           <span>
-            <span onClick={() => this.goShopEdit(record)} className='color-red'>编辑</span>
+            <span onClick={() => this.goShopEdit(record)} style={{ color: '#ff8716' }}>编辑</span>
             <Divider type="vertical" />
             {
               record.status == 1 ?
                 <Popconfirm
                   placement="topLeft" title='确认要封店吗？'
                   onConfirm={() => { this.shopUpdateStatus(record) }} >
-                  <a size="small" className='color-red'>封店</a>
+                  <a size="small" style={{ color: '#ff8716' }}>封店</a>
                 </Popconfirm>
                 :
                 <Popconfirm
                   placement="topLeft" title='确认要恢复吗？'
                   onConfirm={() => { this.shopUpdateStatus(record) }} >
-                  <a size="small" className='color-red'>恢复</a>
+                  <a size="small" style={{ color: '#ff8716' }}>恢复</a>
                 </Popconfirm>
             }
-
           </span>
 
         </span>
@@ -159,13 +155,17 @@ class Page extends Component {
     this.props.form.resetFields();
   }
   goShopEdit = (data) => {
-    data = JSON.stringify(data)
-    window.localStorage.setItem('editData', data);
-    this.props.history.push('shopEdit');
+    let pathParams
+    if (data.id) {
+      
+      pathParams = getReactRouterParams('shopCreated', { id: data.id });
+      data = JSON.stringify(data)
+      window.localStorage.setItem('editData', data);
+    } else {
+      pathParams = getReactRouterParams('shopCreated', { id: 0 });
+    }
+    this.props.history.push(pathParams);
   }
-
-
-
 
 
 
@@ -180,9 +180,9 @@ class Page extends Component {
       <CommonPage title={_title} description={_description} >
         <div style={{ padding: '10px' }}>
           <div className='margin10-0' style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <NavLink to={shopCreatedPath}>
-              <Button style={{ width: 100 }} type='primary'>创建门店</Button>
-            </NavLink>
+
+            <Button style={{ width: 100 }} type='primary' onClick={this.goShopEdit}>创建门店</Button>
+
             <div className='flex-between align-center margin-bottom20'>
               <Form layout='inline'>
                 <Form.Item>

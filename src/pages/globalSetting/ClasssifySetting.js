@@ -97,17 +97,15 @@ class Page extends Component {
       title: '操作',
       render: (text, record, index) => (
         <span>
-
           <span>
             <a onClick={() => { this.showAcountModal(record) }}>编辑信息</a>
             <Divider type="vertical" />
             <Popconfirm
               placement="topLeft" title='确认要删除吗？'
               onConfirm={() => { this.deleteClassify(record) }} >
-              <a size="small" className='color-red'>删除</a>
+              <a size="small" style={{color:'#ff8716'}}>删除</a>
             </Popconfirm>
           </span>
-
         </span>
       )
     }
@@ -221,7 +219,7 @@ class Page extends Component {
   }
 
   onChange = (e) => {
-    this.setState({ checked: e.target.checked })
+    this.setState({ checked: e.target.checked });
   }
 
 
@@ -286,7 +284,6 @@ class Page extends Component {
             saveClicked={this.newItemModalSaveClicked}
             cancelClicked={this._hideNewItemModal}
           >
-
             <Row className='line-height40'>
               <Col span={8} className='text-right'>
                 父分类：
@@ -327,11 +324,9 @@ class Page extends Component {
                   uploadCallback={this.uploadPic}
                 />
               </Col>
-
             </Row>
             <Row className='line-height40'>
               <Col span={8} className='text-right'>
-
               </Col>
               <Col span={16}>
                 <div className='color-red'>
@@ -340,7 +335,6 @@ class Page extends Component {
               </Col>
             </Row>
           </SubmitForm>
-
         </Modal>
       </CommonPage >)
   }

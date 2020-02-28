@@ -7,7 +7,13 @@ const joinParam = (url, params) => {
     return url + key + "=" + params[key] + "&";
   }, url + "?").slice(0, -1);
 }
-
+const getReactRouterParams = (pathname, searchParams) => {
+  let result = { pathname };
+  if (searchParams) {
+    result.search = joinParam('', searchParams);
+  }
+  return result;
+}
 //解析url
 const parseUrl = (url) => {
   let arr = url.split("?");
@@ -49,5 +55,6 @@ const joinQueryParam = (params,label) => {
 module.exports = {
   joinParam,
   joinQueryParam,
-  parseUrl
+  parseUrl,
+  getReactRouterParams
 }

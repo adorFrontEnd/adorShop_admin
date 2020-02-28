@@ -86,7 +86,7 @@ class Page extends Component {
                 <Popconfirm
                   placement="topLeft" title='确认要删除吗？'
                   onConfirm={() => { this.deleteRole(record) }} >
-                  <a size="small" className='color-red'>删除</a>
+                  <a size="small" style={{color:'#ff8716'}}>删除</a>
                 </Popconfirm>
               </span>
               :

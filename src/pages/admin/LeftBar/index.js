@@ -19,8 +19,7 @@ class LeftBar extends Component {
 
   componentWillMount() {
     let userInfo = getCacheUserInfo();
-    // let data = userInfo.data;
-    let data=["appManage.appSearch","oper.roleAuth","oper.operManage", "shop.shopAuth"]
+    let data = userInfo.data;
     let routerData = data.filter((val) => (val.indexOf(".") != -1 || (val == 'home')));
     this.routeList = getRouter(routerData);
     this.rootSubmenuKeys = this.routeList.map(item => item.key);

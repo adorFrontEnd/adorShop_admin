@@ -106,7 +106,7 @@ class NormalLoginForm extends Component {
             getFieldDecorator('password', {
               rules: [
                 { required: true, message: '请输入密码!' },
-                { min: 0, max: 6, message: '请输入6位的密码!' },
+                { min: 0, message: '请输入6位的密码!' },
               ],
             })(
               <Input.Password
@@ -130,7 +130,6 @@ class NormalLoginForm extends Component {
               ],
             })(
               <Input
-
                 onChange={(e) => { this.onLoginChange(e, 'imageCode') }}
                 maxLength={4} type="text" placeholder="填写验证码"
               />
@@ -154,8 +153,6 @@ class NormalLoginForm extends Component {
             登录
         </Button>
         </Form.Item>
-
-
         <div>
           {
             this.props.children
