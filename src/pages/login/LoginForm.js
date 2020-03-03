@@ -84,7 +84,11 @@ class NormalLoginForm extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <Form theme='dark' onSubmit={this.handleSubmit} className="login-form" style={{ width: 450, height: "100%" }}>
+      <Form theme='dark' 
+      onSubmit={this.handleSubmit} 
+      className="login-form" 
+      style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-around" }}
+      >
 
         <FormItem>
           {getFieldDecorator('username', {

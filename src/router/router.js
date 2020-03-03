@@ -15,7 +15,7 @@ const Home = asyncComponent(() => import("../pages/home/Home"));
 const RoleAuth = asyncComponent(() => import("../pages/oper/RoleAuth"));
 const OperManage = asyncComponent(() => import("../pages/oper/OperManage"));
 
-const ShopCreated = asyncComponent(() => import("../pages/shop/ShopCreated"));
+
 const ShopList = asyncComponent(() => import("../pages/shop/ShopList"));
 const ShopEdit = asyncComponent(() => import("../pages/shop/ShopEdit"));
 
@@ -51,7 +51,6 @@ export default class GlobalRouter extends React.Component {
                   <PrivateRoute path={routerConfig["oper.operManage"].path} component={OperManage} />
 
                   <PrivateRoute path={routerConfig["shop.shopAuth.shopList"].path} component={ShopList} />
-                  <PrivateRoute path={routerConfig["shop.shopAuth.shopCreated"].path} component={ShopCreated} />
                   <PrivateRoute path={routerConfig["shop.shopAuth.shopEdit"].path} component={ShopEdit} />
 
                   <PrivateRoute path={routerConfig["globalSetting.areaSetting.areaDeploy"].path} component={AreaSetting} />

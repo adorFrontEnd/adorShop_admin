@@ -165,9 +165,10 @@ class Page extends Component {
           </div>
         </div>
         <div style={{ display: 'flex', justifyContent: "space-between", padding: '20px 4px' }}>
-          <div style={{ padding: '20px 4px' }}>
-
-            <Form theme='dark' className='login-form' style={{ width: 450 }}>
+          <div style={{ width: 366, flex: "0 0 auto", display: "flex", alignItems: "center" }} >
+            <Form theme='dark' className='login-form'
+              style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-around" }}
+            >
 
               <Form.Item className="radius-input">
                 {getFieldDecorator('username', {
@@ -257,7 +258,7 @@ class Page extends Component {
               </Button>
             </Form>
           </div>
-          <div style={{ width: "45%", marginLeft: "12px" }}>
+          <div style={{ width: "45%", flex: "1 1 auto", display: "flex", alignItems: "center", marginLeft: "12px" }}>
             <img src='/image/bg.png' style={{ maxWidth: "100%" }} />
           </div>
         </div>

@@ -14,10 +14,17 @@ const getUpdatePictureUrl = (params) => {
     return result.url
   }
 }
+const getImageCaptcha = (params) => {
 
+  let result = baseHttpProvider.getReqObj('imageCaptcha', params, false, true);
+  if (result.url) {
+    return result.url
+  }
+}
 
 
 export {
   getServerCurrentTime,
-  getUpdatePictureUrl
+  getUpdatePictureUrl,
+  getImageCaptcha
 }

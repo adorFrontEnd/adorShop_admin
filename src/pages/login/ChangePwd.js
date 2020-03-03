@@ -101,7 +101,8 @@ class Page extends Component {
               <span style={{ fontSize: '18px', marginLeft: "10px" }}>修改密码</span></div>
           </div>
         </div>
-        <div style={{ padding: '20px 4px' }}>
+        <div style={{ display: 'flex', justifyContent: "space-between", padding: '20px 4px' }}>
+        <div style={{ width: 366, flex: "0 0 auto", display: "flex", alignItems: "center" }} >
           <Form theme='dark' className='login-form' style={{ width: 450}}>
             <Form.Item>
               {
@@ -159,6 +160,10 @@ class Page extends Component {
         
         </Form.Item>
           </Form>
+        </div>
+        <div style={{ width: "45%", flex: "1 1 auto", display: "flex", alignItems: "center", marginLeft: "12px" }}>
+            <img src='/image/bg.png' style={{ maxWidth: "100%" }} />
+          </div>
         </div>
       </div>
     )

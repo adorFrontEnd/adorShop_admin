@@ -20,12 +20,15 @@ const updateStatus = (params) => {
   return baseHttpProvider.getApi('api/shop/updateStatus', params);
 }
 
-
+const getDetail = (params) => {
+  return baseHttpProvider.getApi('api/shop/getDetail', params);
+}
 
 
 export {
     shopList,
     saveOrUpdate,
     checkShopOper,
-    updateStatus
+    updateStatus,
+    getDetail
 }

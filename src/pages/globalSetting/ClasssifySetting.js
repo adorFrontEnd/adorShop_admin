@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Col, Row, Form, Button, Input, Table, Popconfirm, Modal, Checkbox, Divider, Select, Badge, Menu, Dropdown, Icon } from 'antd';
+import { Col, Row, Form, Button, Input, Table, Popconfirm, Modal, Checkbox, Divider, Select, InputNumber, Cascader } from 'antd';
 import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
 import { SearchForm, SubmitForm } from '../../components/common-form';
@@ -7,7 +7,7 @@ import dateUtil from '../../utils/dateUtil';
 import { searchList, saveOrUpdate, levelList, saveSort, deleteClassify } from '../../api/setting/ClasssifySetting';
 import { searchRoleList } from '../../api/oper/role';
 import { pagination } from '../../utils/pagination';
-import { parseTree } from '../../utils/tree';
+import { parseTree, getTreeMapAndData, getTreeLeMapLevelList } from '../../utils/tree';
 import PictureWall from '../../components/upload/PictureWall';
 
 const _title = "分类设置";
@@ -20,8 +20,9 @@ class Page extends Component {
     tableDataList: null,
     imageUrl: null,
     classList: null,
-    selectValue: null
-
+    selectValue: null,
+    changedClassifySort: {},
+    options: null
   }
 
   componentWillMount() {
@@ -33,9 +34,7 @@ class Page extends Component {
   params = {
     page: 1
   }
-  handleChange = (value) => {
-    this.setState({ selectValue: value });
-  }
+
 
   getPageData = () => {
     let _this = this;
@@ -50,7 +49,11 @@ class Page extends Component {
         this.params.size = pageSize;
         _this.getPageData();
       })
-      let tableDataList = parseTree(res.data, true);
+
+      let tableDataList = res.data.sort(this.objectArraySort('parentId'))
+      if (tableDataList[0].parentId == 0) {
+        tableDataList = parseTree(tableDataList, true)
+      }
       this.setState({
         tableDataList,
         pagination: _pagination
@@ -59,19 +62,30 @@ class Page extends Component {
       this._hideTableLoading();
     })
   }
+
+  objectArraySort = (keyName) => {
+    return function (objectN, objectM) {
+      var valueN = objectN[keyName]
+      var valueM = objectM[keyName]
+      if (valueN > valueM) return 1
+      else if (valueN < valueM) return -1
+      else return 0
+    }
+  }
   _showTableLoading = () => {
-    this.setState({showTableLoading: true})
+    this.setState({ showTableLoading: true })
   }
 
   _hideTableLoading = () => {
-    this.setState({ showTableLoading: false})
+    this.setState({ showTableLoading: false })
   }
   getlevelList = () => {
     levelList({ page: 1, size: 100 })
       .then(res => {
         if (res && res && res.length) {
-          let classList = res;
-          this.setState({classList})
+          let classList = getTreeLeMapLevelList(res)
+          classList = classList.treeData
+          this.setState({ classList })
         }
       })
   }
@@ -83,11 +97,10 @@ class Page extends Component {
     },
     { title: "分类图片", dataIndex: "imageUrl", render: data => <span><img style={{ height: 40, width: 40 }} src={data} /></span> },
     {
-      title: "移动", dataIndex: "roleName",
+      title: "排序", dataIndex: "roleName",
       render: (text, record, index) => (
         <span>
-          <img style={{ height: 30, width: 30 }} src='/image/top.png' />
-          <img style={{ height: 30, width: 30 }} src='/image/bottom.png' />
+          <InputNumber size="small" onChange={(value) => { this.onClassifySortChange(value, record.id) }} style={{ width: 80, marginRight: 10 }} min={0} max={9999999} value={record.sort} />
         </span>
       )
 
@@ -103,7 +116,7 @@ class Page extends Component {
             <Popconfirm
               placement="topLeft" title='确认要删除吗？'
               onConfirm={() => { this.deleteClassify(record) }} >
-              <a size="small" style={{color:'#ff8716'}}>删除</a>
+              <a size="small" style={{ color: '#ff8716' }}>删除</a>
             </Popconfirm>
           </span>
         </span>
@@ -112,6 +125,7 @@ class Page extends Component {
   ]
 
   /* Modal操作*******************************************************************************************************************************************/
+
   newItemFormList = [
     {
       type: "INPUT",
@@ -122,8 +136,8 @@ class Page extends Component {
         { required: true, message: '请输入名称!' }
       ]
     }
+    
   ]
-
   // 打开modal
   showAcountModal = (data) => {
     this.setState({
@@ -131,14 +145,16 @@ class Page extends Component {
     })
     let selectOper = data || null;
     let editFormValue = {};
+    let image
     if (data) {
-      let { roleId, roleName, username, nickname } = data;
-      roleId = { key: roleId, label: roleName };
-      editFormValue = { roleId, username, nickname, _s: Date.now() };
+      let { name, status, imageUrl, parentId, level } = data;
+      parentId = { key: level, name: name }
+      image = imageUrl
+      editFormValue = { name };
     }
     this.setState({
       editFormValue,
-      selectOper
+      selectOper, imageUrl: image
     })
   }
 
@@ -150,26 +166,10 @@ class Page extends Component {
   }
 
   newItemModalSaveClicked = (data) => {
-    let { parentId } = data;
     let { checked, imageUrl, selectValue } = this.state;
-    selectValue = selectValue.split('-')
-    let isSuperclass
-    let level
-    if (checked) {
-      isSuperclass = 1;
-      parentId = 0;
-      level = 1
-    } else {
-      isSuperclass = 0;
-      parentId = parseInt(selectValue[1]);
-      if (selectValue[0] == 1) {
-        level = 2
-      } else if (selectValue[0] == 2) {
-        level = 3
-      }
-    }
+    let reslut = this.formatParmas(checked, selectValue)
+    let { parentId, level, isSuperclass } = reslut
     let params = { ...data, parentId, level, isSuperclass, imageUrl }
-
     let title = '添加分类成功！';
     if (this.state.selectOper) {
       let { id } = this.state.selectOper;
@@ -183,12 +183,37 @@ class Page extends Component {
         this._hideNewItemModal();
       })
   }
-
+  // 处理参数
+  formatParmas = (checked, selectValue) => {
+    let parentId
+    let isSuperclass
+    let level
+    let selectlevel
+    if (selectValue) {
+      selectValue = selectValue.pop().split('-');
+      parentId = selectValue[1];
+      selectlevel = selectValue[2];
+    }
+    if (checked) {
+      isSuperclass = 1;
+      parentId = 0;
+      level = 1
+    } else {
+      isSuperclass = 0;
+      if (selectlevel == 1) {
+        level = 2
+      } else if (selectlevel == 2) {
+        level = 3
+      }
+    }
+    return { parentId, isSuperclass, level }
+  }
+  // 删除分类
   deleteClassify = (record) => {
     let { id } = record;
     deleteClassify({ id })
       .then(() => {
-        Toast("删除账号成功！");
+        Toast("删除成功！");
         this.getPageData();
       })
   }
@@ -202,7 +227,72 @@ class Page extends Component {
       return;
     }
     imageUrl = picList[0];
-    this.setState({imageUrl})
+    this.setState({ imageUrl })
+  }
+  //保存分类排序
+  saveClassifyOrder = () => {
+    let order = this.formatSortSaveData(this.state.changedClassifySort);
+    if (!order) {
+      Toast('排序暂未修改！');
+      return;
+    }
+    let ids = []
+    let sorts = []
+    order.map(item => {
+      ids.push(item.id);
+      sorts.push(item.sort)
+    })
+    ids = ids.join()
+    sorts = sorts.join()
+    saveSort({ ids, sorts })
+      .then(() => {
+        Toast('保存成功');
+        this.getPageData();
+      })
+  }
+  //格式化保存分类的数据
+  formatSortSaveData = (changedClassifySort) => {
+
+    if (!changedClassifySort || !Object.keys(changedClassifySort).length) {
+      return;
+    }
+
+    let result = Object.keys(changedClassifySort).map(k => {
+      return {
+        id: k,
+        sort: changedClassifySort[k]
+      }
+    });
+    return result;
+  }
+
+  // 分类的排序input更改
+  onClassifySortChange = (value, id) => {
+    let tableDataList = this.state.tableDataList;
+    if (!tableDataList) {
+      return;
+    }
+    let index = this.findClassifyIndexById(id, tableDataList);
+    if (index || index == 0) {
+      tableDataList[index]['sort'] = value;
+      let changedClassifySort = this.state.changedClassifySort;
+      changedClassifySort[id] = value;
+      this.setState({
+        changedClassifySort
+      })
+
+    }
+  }
+
+  // 查找分类在数组的索引
+  findClassifyIndexById = (id, arr) => {
+    if (!id || !arr || !arr.length) {
+      return;
+    }
+    let index = arr.findIndex((item) => {
+      return item.id && item.id == id;
+    });
+    return index >= 0 ? index : null;
   }
 
   /**搜索，过滤 *******************************************************************************************************************************/
@@ -221,8 +311,13 @@ class Page extends Component {
   onChange = (e) => {
     this.setState({ checked: e.target.checked });
   }
+  onSlectChange = (value) => {
+    this.setState({ selectValue: value })
 
-
+  }
+  displayRender = (label) => {
+    return label[label.length - 1];
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
     const rowSelection = {
@@ -236,7 +331,14 @@ class Page extends Component {
           <div style={{ display: 'flex' }}>
             {/* <Button style={{ width: 100 }} type='primary'>全选/取消</Button> */}
             <Button onClick={() => { this.showAcountModal() }} style={{ width: 100, margin: '0 10px' }} type='primary'>添加分类</Button>
-            <Button style={{ width: 100 }} type='primary'>保存排序</Button></div>
+            {/* <Button style={{ width: 100 }} type='primary'>保存排序</Button> */}
+            <Popconfirm
+              placement="topLeft" title={'确认要保存产品的排序设置吗？'}
+              onConfirm={() => { this.saveClassifyOrder() }} >
+              <Button type='primary' className='normal margin-right20'>保存排序</Button>
+            </Popconfirm>
+          </div>
+
           <Form layout='inline'>
             <Form.Item
               field="name"
@@ -288,18 +390,16 @@ class Page extends Component {
               <Col span={8} className='text-right'>
                 父分类：
               </Col>
-              <Col span={16}>
+              <Col span={12}>
                 <div>
-                  <Select
-                    placeholder="请选择父分类"
-                    style={{ width: 242 }}
-                    onChange={e => this.handleChange(e)}>
-                    {this.state.classList && this.state.classList.map((item, index) => (
-                      <Select.Option key={index} value={`${item.level}-${item.id}`} disabled={this.state.checked}>
-                        {item.name}
-                      </Select.Option>
-                    ))}
-                  </Select>
+                  <Cascader
+                    options={this.state.classList}
+                    expandTrigger="hover"
+                    displayRender={this.displayRender}
+                    onChange={this.onSlectChange}
+                    changeOnSelect
+                    style={{ width: 240 }}
+                  />
                 </div>
               </Col>
             </Row>
@@ -308,7 +408,7 @@ class Page extends Component {
               </Col>
               <Col span={16}>
                 <div>
-                  <Checkbox checked={this.state.checked} onChange={this.onChange} disabled={this.state.selectValue} />
+                  <Checkbox checked={this.state.checked} onChange={this.onChange} disabled={this.state.parentId} />
                   <span className='margin-left'>无父分类</span>
                 </div>
               </Col>

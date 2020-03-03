@@ -158,11 +158,11 @@ class Page extends Component {
     let pathParams
     if (data.id) {
       
-      pathParams = getReactRouterParams('shopCreated', { id: data.id });
+      pathParams = getReactRouterParams('shopEdit', { id: data.id });
       data = JSON.stringify(data)
       window.localStorage.setItem('editData', data);
     } else {
-      pathParams = getReactRouterParams('shopCreated', { id: 0 });
+      pathParams = getReactRouterParams('shopEdit', { id: 0 });
     }
     this.props.history.push(pathParams);
   }

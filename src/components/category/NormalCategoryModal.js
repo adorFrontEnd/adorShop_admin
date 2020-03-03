@@ -3,6 +3,8 @@ import { Input, Select, Form, Button, Checkbox, Radio, Modal, Row, Col, Tree, Ic
 import { getIdMap, getSelectArrTotalName, getCheckedNamesByIds } from './categoryUtils';
 import { searchList } from '../../api/setting/ClasssifySetting';
 import { parseTree } from '../../utils/tree';
+import './category.less';
+
 const { TreeNode } = Tree;
 
 class cModal extends Component {
@@ -20,7 +22,9 @@ class cModal extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (this.compareIds(this.props.categoryIds, props.categoryIds)){
+   
+  
+    if (this.compareIds(this.props.categoryIds, props.categoryIds)) {
       this.reverData(props.categoryIds);
     }
   }
@@ -34,7 +38,7 @@ class cModal extends Component {
 
   reverData = (categoryIds) => {
     this.setState({
-      checkedKeys:categoryIds
+      checkedKeys: categoryIds
     })
   }
 
@@ -83,9 +87,8 @@ class cModal extends Component {
   //更改选择树
   onCheck = (checkedKeys, info) => {
     let { categoryIds, rawClassifyList, idMap } = this.state;
-
-    checkedKeys = checkedKeys.filter(item => item != '0-0');
-    let categoryList = getSelectArrTotalName(checkedKeys, idMap);
+    let { checked } = checkedKeys;
+    let categoryList = getSelectArrTotalName(checked, idMap);
     this.setState({
       checkedKeys,
       categoryList
@@ -97,14 +100,11 @@ class cModal extends Component {
     for (var i = 0; i < categoryList.length; i++) {
       if (categoryList[i] == item) {
         categoryList.splice(i, 1);
+        checkedKeys.checked.splice(i, 1);
         break;
       }
     }
-    checkedKeys.map(id => {
-      if (id == item.id) {
-        checkedKeys.splice(i, 1);
-      }
-    })
+
     this.setState({ categoryList, checkedKeys });
   }
 
@@ -119,7 +119,7 @@ class cModal extends Component {
         title={this.props.title || "商品分类"}
         onOk={this.onOk}
         onCancel={this.onCancel}
-        width='800px'
+        width={900}
       >
         <div style={{ display: 'flex', position: 'relative' }}>
           <div style={{ width: '50%', padding: '24px', borderRight: '1px solid #f2f2f2' }}>
@@ -139,33 +139,30 @@ class cModal extends Component {
               </Form.Item>
             </Form>
             <Tree
+              checkStrictly={true}
               showIcon
-              checkedKeys={this.state.checkedKeys || []}
+              checkedKeys={this.state.checkedKeys}
               defaultExpandAll={false}
               checkable
               onCheck={this.onCheck}
             >
-              <TreeNode
-                title='所有分类'
-              >
-                {this.renderTree()}
-              </TreeNode>
+              {this.renderTree()}
             </Tree>
           </div>
-          <div style={{ padding: '10px', width: '50%' }}>
-            <div >
+          <div style={{ padding: '10px', width: '50%' }} className='flex-column flex-between'>
+            <div className='flex-wrap' style={{ minHeight: 100 }}>
               {
                 categoryList && categoryList.map((item, index) =>
                   (
-                    <span key={index} className='classitem'>
+                    <div key={index} className='border-radius classitem flex-between flex-middle' >
                       <span>{item.totalName}</span>
-                      <img src='/image/close.png' alt='' style={{ position: 'absolute', right: '10px' }} onClick={() => this.delateClass(item)} />
-                    </span>
+                      <Icon onClick={() => this.delateClass(item)} style={{ fontSize: 16 }} type="close" />
+                    </div>
                   )
                 )
               }
             </div>
-            <div style={{ color: 'red' }}>一个商品最多选择5个分类，如选择了父类则其子类不可选择</div>
+            <div className='color-red margin-top'>一个商品最多选择5个分类，如选择了父类则其子类不可选择</div>
           </div>
         </div>
       </Modal>
@@ -193,7 +190,6 @@ class cModal extends Component {
       if (item.children) {
         return (
           <TreeNode selectable={false} title={this.getTreeNodeTitle(item)} key={item.id}>
-
             {this.renderTreeNode(item.children)}
           </TreeNode>
         )

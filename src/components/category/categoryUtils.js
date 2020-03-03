@@ -52,8 +52,61 @@ const getCheckedNamesByIds = (idMap, ids, seprator) => {
   return seprator ? names.join(seprator) : names;
 }
 
+const getRelativeIds = (id, idMap, rawClassifyList) => {
+  if (!id) {
+    return
+  }
+  let item = idMap[id];
+  let level = item['level'];
+
+  if (level == 3) {
+    let parentId = item['parentId'];
+    let grandParentId = idMap[parentId]['parentId'];
+    return [parentId, grandParentId];
+  }
+
+  if (level == 2) {
+    let parentId = item['parentId'];
+    let childIds = rawClassifyList.filter(item => item.parentId == id).map(item => item.id);
+    return [parentId, ...childIds]
+  }
+
+  if (level == 1) {
+
+    let childIds = rawClassifyList.filter(item => item.parentId == id).map(item => item.id);
+    let totalGrandChildIds = [];
+    childIds.forEach(childId => {
+      let grandChildIds = rawClassifyList.filter(item => item.parentId == childId).map(item => item.id);
+      totalGrandChildIds = totalGrandChildIds.concat(grandChildIds);
+    })
+    return [...childIds, ...totalGrandChildIds]
+  }
+}
+
+const getCleanRelativeIdsById = (id, ids, idMap, rawClassifyList) => {
+  let cleanIds = [];
+  if (!id || !ids || !ids.length) {
+    return ids;
+  }
+  let relativeIds = getRelativeIds(id, idMap, rawClassifyList);
+  if (!relativeIds || !relativeIds.length) {
+    return ids;
+  }
+  ids.forEach(item => {
+    let exist = relativeIds.filter(i => i == item).length;
+    if (exist <= 0) {
+      cleanIds.push(item);
+    }
+  })
+  return cleanIds;
+}
+
+
+
 export {
   getSelectArrTotalName,
   getIdMap,
-  getCheckedNamesByIds
+  getCheckedNamesByIds,
+  getRelativeIds,
+  getCleanRelativeIdsById
 }
