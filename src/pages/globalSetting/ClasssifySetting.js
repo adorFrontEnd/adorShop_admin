@@ -49,9 +49,9 @@ class Page extends Component {
         _this.getPageData();
       })
 
-      let tableDataList = res.data.sort(this.objectArraySort('parentId'))
+      let tableDataList = res.data.sort(this.objectArraySort('parentId'));
       if (tableDataList[0].parentId == 0) {
-        tableDataList = parseTree(tableDataList, true)
+        tableDataList = parseTree(tableDataList, true);
       }
       this.setState({
         tableDataList,
@@ -72,20 +72,20 @@ class Page extends Component {
     }
   }
   _showTableLoading = () => {
-    this.setState({ showTableLoading: true })
+    this.setState({ showTableLoading: true });
   }
 
   _hideTableLoading = () => {
-    this.setState({ showTableLoading: false })
+    this.setState({ showTableLoading: false });
   }
   // 获取分类
   getlevelList = () => {
     levelList({ page: 1, size: 100 })
       .then(res => {
         if (res && res && res.length) {
-          let classList = getTreeLeMapLevelList(res)
-          classList = classList.treeData
-          this.setState({ classList })
+          let classList = getTreeLeMapLevelList(res);
+          classList = classList.treeData;
+          this.setState({ classList });
         }
       })
   }
@@ -148,8 +148,8 @@ class Page extends Component {
     let image
     if (data) {
       let { name, status, imageUrl, parentId, level } = data;
-      parentId = { key: level, name: name }
-      image = imageUrl
+      parentId = { key: level, name: name };
+      image = imageUrl;
       editFormValue = { name };
     }
     this.setState({
@@ -167,9 +167,9 @@ class Page extends Component {
 
   newItemModalSaveClicked = (data) => {
     let { checked, imageUrl, selectValue } = this.state;
-    let reslut = this.formatParmas(checked, selectValue)
-    let { parentId, level, isSuperclass } = reslut
-    let params = { ...data, parentId, level, isSuperclass, imageUrl }
+    let reslut = this.formatParmas(checked, selectValue);
+    let { parentId, level, isSuperclass } = reslut;
+    let params = { ...data, parentId, level, isSuperclass, imageUrl };
     let title = '添加分类成功！';
     if (this.state.selectOper) {
       let { id } = this.state.selectOper;
@@ -201,9 +201,9 @@ class Page extends Component {
     } else {
       isSuperclass = 0;
       if (selectlevel == 1) {
-        level = 2
+        level = 2;
       } else if (selectlevel == 2) {
-        level = 3
+        level = 3;
       }
     }
     return { parentId, isSuperclass, level }
@@ -236,14 +236,14 @@ class Page extends Component {
       Toast('排序暂未修改！');
       return;
     }
-    let ids = []
-    let sorts = []
+    let ids = [];
+    let sorts = [];
     order.map(item => {
       ids.push(item.id);
       sorts.push(item.sort)
     })
-    ids = ids.join()
-    sorts = sorts.join()
+    ids = ids.join();
+    sorts = sorts.join();
     saveSort({ ids, sorts })
       .then(() => {
         Toast('保存成功');
@@ -252,11 +252,9 @@ class Page extends Component {
   }
   //格式化保存分类的数据
   formatSortSaveData = (changedClassifySort) => {
-
     if (!changedClassifySort || !Object.keys(changedClassifySort).length) {
       return;
     }
-
     let result = Object.keys(changedClassifySort).map(k => {
       return {
         id: k,
@@ -312,12 +310,14 @@ class Page extends Component {
     this.setState({ checked: e.target.checked });
   }
   onSlectChange = (value) => {
-    this.setState({ selectValue: value })
+    this.setState({ selectValue: value });
 
   }
   displayRender = (label) => {
     return label[label.length - 1];
   }
+
+  
   render() {
     const { getFieldDecorator } = this.props.form;
     const rowSelection = {
