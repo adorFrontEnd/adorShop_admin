@@ -95,7 +95,6 @@ class cModal extends Component {
     }
     let category = getCheckedNamesByIds(idMap, checkedIds, " ");
     let categoryList = getSelectArrTotalName(checkedIds, idMap);
-
     let params = {
       categoryIds: checkedIds,
       category,

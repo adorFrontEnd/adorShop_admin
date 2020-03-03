@@ -21,8 +21,7 @@ class Page extends Component {
     imageUrl: null,
     classList: null,
     selectValue: null,
-    changedClassifySort: {},
-    options: null
+    changedClassifySort: {}
   }
 
   componentWillMount() {
@@ -79,6 +78,7 @@ class Page extends Component {
   _hideTableLoading = () => {
     this.setState({ showTableLoading: false })
   }
+  // 获取分类
   getlevelList = () => {
     levelList({ page: 1, size: 100 })
       .then(res => {

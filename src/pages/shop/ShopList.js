@@ -30,6 +30,7 @@ class Page extends Component {
   params = {
     page: 1
   }
+
   getPageData = () => {
     let _this = this;
     this._showTableLoading();
@@ -176,6 +177,7 @@ class Page extends Component {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       }
     };
+    
     return (
       <CommonPage title={_title} description={_description} >
         <div style={{ padding: '10px' }}>
