@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Table, Form, Tabs, Tree, Input, Icon, List, Spin, Button, Row, Col, Popconfirm } from "antd";
+import { Table, Form, Tree, Input, Icon, List, Spin, Button } from "antd";
 import CommonPage from '../../components/common-page';
 import { getRouter } from '../../router/routerParse';
 import { getAllList } from '../../api/oper/role';

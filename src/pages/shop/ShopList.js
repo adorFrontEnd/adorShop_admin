@@ -1,8 +1,7 @@
 import React, { Component } from "react";
-import { Col, Row, Card, Spin, Form, Button, Input, Table, Popconfirm, Divider, Modal, Select } from 'antd';
+import {  Form, Button, Input, Table, Popconfirm, Divider, Modal, Select } from 'antd';
 import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
-import { SearchForm, SubmitForm } from '../../components/common-form';
 import dateUtil from '../../utils/dateUtil';
 import { shopList, updateStatus } from '../../api/shopManage/shopList';
 import { parseUrl, getReactRouterParams } from '../../utils/urlUtils';
@@ -13,8 +12,7 @@ import { NavLink, Link } from 'react-router-dom';
 import { baseRoute, routerConfig } from '../../config/router.config';
 const _title = "门店列表";
 const _description = "";
-const shopEditPath = routerConfig["shop.shopAuth.shopEdit"].path;
-const shopCreatedPath = routerConfig["shop.shopAuth.shopCreated"].path;
+
 class Page extends Component {
   state = {
     tableDataList: null,
@@ -155,10 +153,10 @@ class Page extends Component {
   resetClicked = () => {
     this.props.form.resetFields();
   }
+
   goShopEdit = (data) => {
     let pathParams
     if (data.id) {
-      
       pathParams = getReactRouterParams('shopEdit', { id: data.id });
       data = JSON.stringify(data)
       window.localStorage.setItem('editData', data);
@@ -208,7 +206,7 @@ class Page extends Component {
                   {
                     getFieldDecorator('inputValue', {
                     })(
-                      <Input allowClear style={{ width: "240px" }} placeholder='商品名称/商品编号' onChange={this.boxInputDataChange} />
+                      <Input allowClear style={{ width: "240px" }} placeholder='门店名称/联系人' onChange={this.boxInputDataChange} />
                     )
                   }
                 </Form.Item>
@@ -232,13 +230,10 @@ class Page extends Component {
             rowSelection={rowSelection}
           />
         </div>
-
-
-
-
       </CommonPage >)
   }
 }
+
 const mapStateToProps = state => state;
 const mapDispatchToProps = (dispatch) => {
   return {

@@ -2,12 +2,12 @@ import React, { Component } from "react";
 import { Col, Row, Form, Button, Input, Table, Popconfirm, Modal, Checkbox, Divider, Select, InputNumber, Cascader } from 'antd';
 import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
-import { SearchForm, SubmitForm } from '../../components/common-form';
+import {  SubmitForm } from '../../components/common-form';
 import dateUtil from '../../utils/dateUtil';
 import { searchList, saveOrUpdate, levelList, saveSort, deleteClassify } from '../../api/setting/ClasssifySetting';
 import { searchRoleList } from '../../api/oper/role';
 import { pagination } from '../../utils/pagination';
-import { parseTree, getTreeMapAndData, getTreeLeMapLevelList } from '../../utils/tree';
+import { parseTree, getTreeLeMapLevelList } from '../../utils/tree';
 import PictureWall from '../../components/upload/PictureWall';
 
 const _title = "分类设置";
