@@ -27,7 +27,6 @@ class Page extends Component {
   componentWillMount() {
     this.getPageData();
     this.getlevelList();
-
   }
 
   params = {
@@ -419,7 +418,7 @@ class Page extends Component {
               </Col>
               <Col span={16} >
                 <PictureWall
-                  folder='trace'
+                  folder='classify'
                   pictureList={this.state.imageUrl ? [this.state.imageUrl] : null}
                   uploadCallback={this.uploadPic}
                 />

@@ -215,7 +215,7 @@ class Page extends Component {
               </Col>
               <Col span={16} >
                 <PictureWall
-                  folder='trace'
+                  folder='shop'
                   pictureList={this.state.imageUrl ? [this.state.imageUrl] : null}
                   uploadCallback={this.uploadPic}
                 />

@@ -1,6 +1,7 @@
 import { Upload, Icon, Modal, Spin } from 'antd';
 import React, { Component } from 'react';
 import { getUpdatePictureUrl } from '../../api/SYS/SYS';
+import { upLoadConfigData } from '../../config/http.config';
 import Toast from '../../utils/toast';
 let updateUrl = '';
 let initUid = 1;
@@ -25,8 +26,12 @@ export default class PicturesWall extends Component {
   };
 
   componentDidMount() {
-    let folder = this.props.folder || 'product';
-    updateUrl = getUpdatePictureUrl({ folder });
+
+    updateUrl = getUpdatePictureUrl();
+    let postData =  { ...upLoadConfigData, folder: this.props.folder || "product" } ;
+    this.setState({
+      postData
+    })
     this.getFileList();
   }
 
@@ -222,7 +227,20 @@ export default class PicturesWall extends Component {
     return true
   }
 
+  isFileTypeValid = (file) => {
+    if (!file || !file.type) {
+      return
+    }
+    let fileType = file.type;
+    if (!/image/.test(fileType)) {
+      return
+    }
 
+    if (!this.isAllowFileType(fileType)) {
+      return;
+    }
+    return true
+  }
 
   isAllowFileType = (fileType) => {
     if (!this.props.allowType || !this.props.allowType.length) {
@@ -256,29 +274,14 @@ export default class PicturesWall extends Component {
     return true
   }
 
-  isFileTypeValid = (file) => {
-    if (!file || !file.type) {
-      return
-    }
-    let fileType = file.type;
-    if (!/image/.test(fileType)) {
-      return
-    }
-
-    if (!this.isAllowFileType(fileType)) {
-      return;
-    }
-    return true
-  }
-
   render() {
     const { previewVisible, previewImage, fileList } = this.state;
     const limitFileLength = this.props.limitFileLength || 1;
     const uploadButton = (
-      <div className='ant-upload ant-upload-select ant-upload-select-picture-card' >
+      <div style={this.props.style} className='ant-upload ant-upload-select ant-upload-select-picture-card' >
         <div className='flex-column flex-around padding20'>
           <Icon type="plus" style={{ fontSize: 32, color: "#999" }} />
-          <div className="ant-upload-text">上传图片</div>
+          <div className="ant-upload-text">{this.props.title || "上传图片"}</div>
         </div>
       </div>
     );
@@ -286,6 +289,7 @@ export default class PicturesWall extends Component {
       <div>
         <div className="clearfix">
           <Upload
+            data={this.state.postData}
             accept="image/*"
             beforeUpload={this.beforeUpload}
             action={updateUrl}
@@ -300,7 +304,7 @@ export default class PicturesWall extends Component {
           {
             <div className='clearfix'>
               <span>
-                <div className='ant-upload-list ant-upload-list-picture-card'>
+                <div className='ant-upload-list ant-upload-list-picture-card flex'>
                   {
                     fileList && fileList.length ?
                       fileList.map((item, index) =>
@@ -357,9 +361,10 @@ export default class PicturesWall extends Component {
             </div>
           }
         </div>
-        <Modal
-          maskClosable={false} maskClosable={false} zIndex={3000} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-          <img alt="example" style={{ width: '100%' }} src={previewImage} />
+        <Modal maskClosable={false} zIndex={3000} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+          <div className='padding20'>
+            <img alt="example" style={{ width: '100%' }} src={previewImage} />
+          </div>
         </Modal>
       </div>
     );

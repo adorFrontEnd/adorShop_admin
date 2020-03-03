@@ -1,4 +1,5 @@
 import baseHttpProvider from '../base/baseHttpProvider'
+import uploadBaseHttpProvider from '../base/uploadBaseHttpProvider';
 
 // 获取当前服务器时间
 const getServerCurrentTime = () => {
@@ -7,13 +8,15 @@ const getServerCurrentTime = () => {
   })
 }
 
+
 const getUpdatePictureUrl = (params) => {
 
-  let result = baseHttpProvider.getReqObj('api/uploadImg', params)
+  let result = uploadBaseHttpProvider.getReqObj('api/captcha/uploadImg', params)
   if (result.url) {
     return result.url
   }
 }
+
 const getImageCaptcha = (params) => {
 
   let result = baseHttpProvider.getReqObj('imageCaptcha', params, false, true);
