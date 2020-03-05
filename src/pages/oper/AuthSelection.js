@@ -102,7 +102,6 @@ class AuthSelection extends Component {
   }
 
   onCheck = (checkedKeys, info) => {
-
     let selectRoleAuth = this.sortBySourceSortNumMap(checkedKeys);
     this.setState({
       selectRoleAuth

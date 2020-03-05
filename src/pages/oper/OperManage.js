@@ -7,13 +7,12 @@ import dateUtil from '../../utils/dateUtil';
 import { searchOperList, deleteOper, saveOrUpdate } from '../../api/oper/oper';
 import { searchRoleList } from '../../api/oper/role';
 import { pagination } from '../../utils/pagination';
-
+import './index.less';
 const _title = "账号管理";
 const _description = "";
 
 class Page extends Component {
   state = {
-
     tableDataList: null,
     editFormValue: null,
     newItemModalVisible: false,
@@ -207,7 +206,6 @@ class Page extends Component {
       ...data,
       ..._data
     }
-    console.log(this.params)
     this.params.page = 1;
     this.getPageData();
   }
@@ -306,6 +304,7 @@ class Page extends Component {
             footer={null}
             onCancel={this._hideNewItemModal}
             className='noPadding'
+          // width={900}
           >
             <SubmitForm
               clearWhenHide={true}
@@ -315,33 +314,13 @@ class Page extends Component {
               saveClicked={this.newItemModalSaveClicked}
               cancelClicked={this._hideNewItemModal}
             >
+
+              <div span={8} style={{ position: 'absolute', top: '128px', right: '20px', lineHeight: '50px', color: 'red' }}>
+                默认密码为手机号
+              </div>
+
+
             </SubmitForm>
-          </Modal>
-
-          <Modal maskClosable={false}
-            title="重置密码"
-            visible={this.state.passwordModalVisible}
-            onCancel={this.hidePasswordModal}
-            onOk={this.passwordModalConfirm}
-            className='noPadding'
-          >
-            <div>
-
-            </div>
-
-            <Row className='line-height40'>
-              <Col span={7} className='text-right'>
-                <span className='label-color label-required'>填写密码：</span>
-              </Col>
-              <Col span={10}>
-                <Input
-                  value={this.state.password}
-                  onChange={this.passwordOnChange}
-                  placeholder='请填入至少6位数的密码'
-                />
-              </Col>
-            </Row>
-
           </Modal>
 
         </div>

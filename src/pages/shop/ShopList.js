@@ -58,7 +58,7 @@ class Page extends Component {
     { title: "地址", dataIndex: "address", render: data => data || '--' },
     { title: "联系人", dataIndex: "nickname", render: data => data || '--' },
     { title: "超管账号", dataIndex: "username", render: data => data || '--' },
-    { title: "经营范围", dataIndex: "businessScope", render: data => data || '--' },
+    { title: "经营范围", dataIndex: "businessScope", render: data => data? data.substring(0, data.length-1) : '--' },
     { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
     {
       title: "状态",

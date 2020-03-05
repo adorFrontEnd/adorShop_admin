@@ -78,7 +78,7 @@ class AreaManage extends Component {
         Toast('保存成功');
         this.getClassify();
       })
-    console.log(order);
+
   }
 
   //格式化保存分类的数据
@@ -423,7 +423,6 @@ class AreaManage extends Component {
     let canDelete = !item.children || !item.children.length;
     return (
       <div className='flex-center'>
-
         <InputNumber size="small" onChange={(value) => { this.onClassifySortChange(value, item.id) }} style={{ width: 80, marginRight: 10 }} min={0} max={9999999} value={item.sort} />
         <span className='margin-right'>{item.name}</span>
       </div>

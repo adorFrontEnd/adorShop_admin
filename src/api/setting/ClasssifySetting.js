@@ -6,7 +6,7 @@ import baseHttpProvider from '../base/baseHttpProvider';
 //     )
 // }
 const searchList = (params) => {
-    return baseHttpProvider.postFormApi('api/category/searchList', { page: 1, size: 10, ...params }, { total: true });
+    // return baseHttpProvider.postFormApi('api/category/searchList', { page: 1, size: 10, ...params }, { total: true });
     return baseHttpProvider.postFormApi('api/category/searchList', params, { total: true });
 }
 

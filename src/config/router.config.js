@@ -1,5 +1,5 @@
 const baseRoute = "";
-const routerSort = ["home", "appManage", "transaction", "settlement", "oper", "shop","enterpriseAccount", "thirdPartPay"];
+const routerSort = ["home", "appManage", "transaction", "settlement", "oper", "shop", "enterpriseAccount", "thirdPartPay"];
 
 const routerConfigArr = [
   {
@@ -109,6 +109,22 @@ const routerConfigArr = [
     moduleAuth: true
   },
   {
+    route_name: "globalSetting.authSetting",
+    path: baseRoute + "/globalSetting/authSetting",
+    loginRequired: true,
+    moduleAuth: true,
+    title: "权限设置",
+    icon: "environment"
+  },
+  {
+    route_name: "globalSetting.authSetting.authSetting",
+    path: baseRoute + "/globalSetting/authSetting",
+    loginRequired: true,
+    moduleAuth: true,
+    title: "权限设置",
+    icon: "environment"
+  },
+  {
     route_name: "globalSetting.areaSetting",
     path: baseRoute + "/globalSetting/areaSetting",
     loginRequired: true,
@@ -116,6 +132,7 @@ const routerConfigArr = [
     title: "地区设置",
     icon: "environment"
   },
+  
   {
     route_name: "globalSetting.areaSetting.areaDeploy",
     path: baseRoute + "/globalSetting/areaDeploy",

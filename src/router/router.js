@@ -21,6 +21,7 @@ const ShopEdit = asyncComponent(() => import("../pages/shop/ShopEdit"));
 
 const AreaSetting = asyncComponent(() => import("../pages/globalSetting/AreaSetting"));
 const ClasssifySetting = asyncComponent(() => import("../pages/globalSetting/ClasssifySetting"));
+const AuthSetting = asyncComponent(() => import("../pages/globalSetting/authSetting"));
 
 
 
@@ -55,6 +56,7 @@ export default class GlobalRouter extends React.Component {
 
                   <PrivateRoute path={routerConfig["globalSetting.areaSetting.areaDeploy"].path} component={AreaSetting} />
                   <PrivateRoute path={routerConfig["globalSetting.classsifySetting.shopClassify"].path} component={ClasssifySetting} />
+                  <PrivateRoute path={routerConfig["globalSetting.authSetting"].path} component={AuthSetting} />
 
                   
                 </Switch>

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Col, Row, Form, Button, Input, Table, Popconfirm, Modal, Checkbox, Divider, Select, InputNumber, Cascader } from 'antd';
 import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
-import {  SubmitForm } from '../../components/common-form';
+import { SubmitForm } from '../../components/common-form';
 import dateUtil from '../../utils/dateUtil';
 import { searchList, saveOrUpdate, levelList, saveSort, deleteClassify } from '../../api/setting/ClasssifySetting';
 import { searchRoleList } from '../../api/oper/role';
@@ -54,6 +54,7 @@ class Page extends Component {
       }
       this.setState({
         tableDataList,
+        rawClassifyList: res.data,
         pagination: _pagination
       })
     }).catch(() => {
@@ -135,7 +136,7 @@ class Page extends Component {
         { required: true, message: '请输入名称!' }
       ]
     }
-    
+
   ]
   // 打开modal
   showAcountModal = (data) => {
@@ -147,7 +148,18 @@ class Page extends Component {
     let image
     if (data) {
       let { name, status, imageUrl, parentId, level } = data;
-      parentId = { key: level, name: name };
+      let { rawClassifyList } = this.state;
+      this.setState({ name })
+      if (parentId == 0) {
+        this.setState({ checked: true });
+      } else {
+        this.setState({ checked: false });
+        rawClassifyList.map(item => {
+          if (item.id == parentId) {
+            this.setState({ placeholder: item.name });
+          }
+        })
+      }
       image = imageUrl;
       editFormValue = { name };
     }
@@ -156,19 +168,22 @@ class Page extends Component {
       selectOper, imageUrl: image
     })
   }
-
   // 关闭modal
   _hideNewItemModal = () => {
     this.setState({
-      newItemModalVisible: false
+      newItemModalVisible: false, selectValue: null, checked: false, placeholder: null, disabled: false, name: null
     })
   }
 
   newItemModalSaveClicked = (data) => {
-    let { checked, imageUrl, selectValue } = this.state;
+    let { checked, imageUrl, selectValue, name } = this.state;
+    if (!name) {
+      this.setState({ isShowTip: true })
+      return
+    }
     let reslut = this.formatParmas(checked, selectValue);
     let { parentId, level, isSuperclass } = reslut;
-    let params = { ...data, parentId, level, isSuperclass, imageUrl };
+    let params = { ...data, name, parentId, level, isSuperclass, imageUrl };
     let title = '添加分类成功！';
     if (this.state.selectOper) {
       let { id } = this.state.selectOper;
@@ -179,6 +194,7 @@ class Page extends Component {
       .then(() => {
         Toast(title);
         this.getPageData();
+        this.getlevelList()
         this._hideNewItemModal();
       })
   }
@@ -265,17 +281,23 @@ class Page extends Component {
 
   // 分类的排序input更改
   onClassifySortChange = (value, id) => {
-    let tableDataList = this.state.tableDataList;
-    if (!tableDataList) {
+
+    let { rawClassifyList, tableDataList } = this.state;
+    if (!rawClassifyList) {
       return;
     }
-    let index = this.findClassifyIndexById(id, tableDataList);
+    let index = this.findClassifyIndexById(id, rawClassifyList);
     if (index || index == 0) {
-      tableDataList[index]['sort'] = value;
+      rawClassifyList[index]['sort'] = value;
       let changedClassifySort = this.state.changedClassifySort;
+      let tableDataList = rawClassifyList.sort(this.objectArraySort('parentId'));
+      if (tableDataList[0].parentId == 0) {
+        tableDataList = parseTree(tableDataList, true);
+      }
       changedClassifySort[id] = value;
       this.setState({
-        changedClassifySort
+        changedClassifySort,
+        tableDataList
       })
 
     }
@@ -316,7 +338,10 @@ class Page extends Component {
     return label[label.length - 1];
   }
 
-  
+  onInputChange = e => {
+    const { value } = e.target;
+    this.setState({ name: value })
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
     const rowSelection = {
@@ -330,7 +355,6 @@ class Page extends Component {
           <div style={{ display: 'flex' }}>
             {/* <Button style={{ width: 100 }} type='primary'>全选/取消</Button> */}
             <Button onClick={() => { this.showAcountModal() }} style={{ width: 100, margin: '0 10px' }} type='primary'>添加分类</Button>
-            {/* <Button style={{ width: 100 }} type='primary'>保存排序</Button> */}
             <Popconfirm
               placement="topLeft" title={'确认要保存产品的排序设置吗？'}
               onConfirm={() => { this.saveClassifyOrder() }} >
@@ -380,24 +404,39 @@ class Page extends Component {
           <SubmitForm
             clearWhenHide={true}
             showForm={this.state.newItemModalVisible}
-            setFormValue={this.state.editFormValue}
-            formItemList={this.newItemFormList}
+            // setFormValue={this.state.editFormValue}
+            // formItemList={this.newItemFormList}
             saveClicked={this.newItemModalSaveClicked}
             cancelClicked={this._hideNewItemModal}
           >
             <Row className='line-height40'>
-              <Col span={8} className='text-right'>
+              <Col span={8} className='text-right label-required'>
+                分类名称：
+              </Col>
+              <Col span={12}>
+                <Input placeholder='请输入分类名称' onChange={this.onInputChange} value={this.state.name} allowClear />
+                {this.state.isShowTip ?
+                  <div className='color-red' style={{lineHeight:'16px'}}>请输入分类名称</div> : null
+                }
+              </Col>
+            </Row>
+            <Row className='line-height40'>
+              <Col span={8} className='text-right label-required'>
                 父分类：
               </Col>
               <Col span={12}>
                 <div>
                   <Cascader
                     options={this.state.classList}
-                    expandTrigger="hover"
+                    // expandTrigger="hover"
                     displayRender={this.displayRender}
                     onChange={this.onSlectChange}
                     changeOnSelect
                     style={{ width: 240 }}
+                    value={this.state.selectValue}
+                    disabled={this.state.checked}
+                    placeholder={this.state.checked ? '请选择' : this.state.placeholder || '请选择'}
+                  // placeholder='请选择'
                   />
                 </div>
               </Col>

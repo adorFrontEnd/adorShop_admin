@@ -53,14 +53,14 @@ class Page extends Component {
       .then(data => {
         let { name, address, businessScope, imageUrl, deadline, categoryList } = data;
         let { categoryIds, category } = this.state;
-        let time =moment(deadline)
+        let time = moment(deadline)
         categoryList && categoryList.map(item => {
           categoryIds.push(item.categoryId);
           category.push(item.name)
         })
         this.props.form.setFieldsValue({
           name,
-          address,time
+          address, time
         });
         category = category.join(' ')
         this.setState({
@@ -85,18 +85,25 @@ class Page extends Component {
       }
       let { date, imageUrl, shopOper, categoryIds, userDetail, status, idstatus, phone } = this.state;
       let deadlineStamp = dateUtil.getDayStartStamp(Date.parse(date));
+      categoryIds = categoryIds ? categoryIds.join() : null;
       let id = userDetail ? userDetail.id : null;
       if (phone) {
         if (!shopOper) {
           Toast('请先检测手机号')
           return;
         }
+      } else {
+        if (!userDetail) {
+          this.setState({ isShowTest: true, isShowerr: false });
+          return;
+        }
       }
       let shopOperId = shopOper ? shopOper.id : userDetail.shopOperId;
-      let params = { ...data, imageUrl, deadlineStamp, shopOperId, id, categoryIds: categoryIds.join() };
+      let params = { ...data, imageUrl, deadlineStamp, shopOperId, id, categoryIds };
       saveOrUpdate(params)
         .then(() => {
           Toast(`${id ? "编辑" : "创建"}成功!`, "success");
+          window.localStorage.setItem('editData', null);
           this.props.history.push('shopList');
         })
     })
@@ -121,11 +128,11 @@ class Page extends Component {
     this.setState({ isdetection: true })
     let { phone } = this.state
     if (!phone) {
-      this.setState({isShowTest:true})
+      this.setState({ isShowTest: true })
       return;
     }
-    if(phone.length!=12){
-      this.setState({isShowerr:true})
+    if (phone.length != 11) {
+      this.setState({ isShowerr: true })
       return
     }
     this.params.phone = phone;
@@ -242,18 +249,15 @@ class Page extends Component {
               </div>
 
             </Form.Item>
-            <Form.Item
-              labelCol={{ span: 6 }}
-              wrapperCol={{ span: 16 }}
-              label='经营范围：'
-              field='businessScope'
-            >
-              <div style={{ display: 'flex', lineHeight: '40px' }}>
-                <Button onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px', height: '40px' }} type='primary'>选择经营分类</Button>
+            <Row className='line-height40'>
+              <Col span={6} className='text-right label-required'>
+                经营范围：
+              </Col>
+              <Col span={14} style={{ display: 'flex' }}>
+                <Button type='primary' onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px', height: '40px' }} type='primary'>选择经营分类</Button>
                 {category}
-              </div>
-
-            </Form.Item>
+              </Col>
+            </Row>
           </Form>
         </div>
         <div style={{ display: 'flex', height: '30px', lineHeight: '30px' }}>
@@ -280,14 +284,14 @@ class Page extends Component {
                   <Col span={16} >
                     <div style={{ display: 'flex' }}>
                       <div>
-                      <Input allowClear value={this.state.phone} onChange={this.phoneChange} />
-                      {
-                        this.state.isShowTest?<div style={{color:'#f5222d'}}>
-                          {
-                            this.state.isShowerr?'手机号格式不正确':'请输入手机号'
-                          }
-                          </div>:null
-                      }
+                        <Input allowClear value={this.state.phone} onChange={this.phoneChange} />
+                        {
+                          this.state.isShowTest ? <div style={{ color: '#f5222d' }}>
+                            {
+                              this.state.isShowerr ? '手机号格式不正确' : '请输入手机号'
+                            }
+                          </div> : null
+                        }
                       </div>
                       <Button type='primary' onClick={this.clickPhoneTest} style={{ margin: '0 10px' }}>检测</Button>
                       <Button type='primary' onClick={this.resetClicked}>重置</Button>
@@ -311,7 +315,7 @@ class Page extends Component {
                           <div style={{ marginTop: '10px', color: '#ff6700' }}> {shopOper && shopOper.username}</div>
                         </div>
                       </div>
-                    </div> 
+                    </div>
                     : null
                 }
               </div>

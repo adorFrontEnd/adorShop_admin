@@ -160,7 +160,7 @@ class Page extends Component {
             <div><img src='/favicon.ico' style={{ height: 50, width: 50, marginRight: 10 }} /></div>
             <div className='login-form-title'>爱朵电商</div>
             <div style={{ position: 'absolute', bottom: '0px', left: '167px', fontSize: '16px' }}>
-              总平台
+              总后台
               <span style={{ fontSize: '18px', marginLeft: "10px" }}>忘记密码</span></div>
           </div>
         </div>
