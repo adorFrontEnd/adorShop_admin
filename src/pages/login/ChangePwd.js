@@ -3,8 +3,7 @@ import { message, Form, Input, Button, Row, Col } from 'antd';
 import { sendSms, changePassword } from '../../api/oper/login';
 import { md5 } from '../../utils/signMD5.js';
 import { baseRoute, routerConfig } from '../../config/router.config';
-import { getCacheAccountList, setCacheAccountList, getCacheUserInfo } from '../../middleware/localStorage/login';
-
+import { getCacheAccountList, setCacheAccountList, getCacheUserInfo,setCacheUserInfo } from '../../middleware/localStorage/login';
 import './index.less';
 import Toast from "../../utils/toast";
 
@@ -18,28 +17,13 @@ class Page extends Component {
 
   componentDidMount() {
     document.title = '爱朵电商 | 总后台'
-    this.getPageData();
   }
 
   goback = () => {
     window.history.back();
   }
 
-  getPageData = () => {
-    let accounts = getCacheAccountList();
-    if (accounts && accounts.username) {
-      this.setState({
-        phone: accounts.username,
-        redirectLogin: false
-      })
-    } else {
-      let cacheUserInfo = getCacheUserInfo();
-      this.setState({
-        phone: cacheUserInfo.phoneNumber,
-        redirectLogin: true
-      })
-    }
-  }
+
 
   submitClicked = () => {
     this.props.form.validateFields((err, data) => {
@@ -64,20 +48,10 @@ class Page extends Component {
       changePassword(params)
         .then(() => {
           Toast("修改成功！");
-          if (this.state.redirectLogin) {
-            this.props.history.push(routerConfig['login'].path);
-            return;
-          }
-          let accounts = getCacheAccountList();
-          let { password, ...cacheData } = accounts;
-          password = params.newPassword;
-          setCacheAccountList({ password, ...cacheData });
-          setTimeout(() => {
-            this.setState({
-              showBtnLoading: false
-            })
-            this.props.history.push(routerConfig['shop.shopAuth.shopList'].path);
-          }, 1000)
+          setCacheUserInfo(null)
+            setTimeout(()=>{
+              this.props.history.push(routerConfig['login'].path);
+            },500)
 
         })
         .catch(() => {

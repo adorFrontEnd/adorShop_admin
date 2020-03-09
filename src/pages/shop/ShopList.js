@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {  Form, Button, Input, Table, Popconfirm, Divider, Modal, Select } from 'antd';
+import { Form, Button, Input, Table, Popconfirm, Divider, Modal, Select } from 'antd';
 import Toast from '../../utils/toast';
 import CommonPage from '../../components/common-page';
 import dateUtil from '../../utils/dateUtil';
@@ -58,7 +58,7 @@ class Page extends Component {
     { title: "地址", dataIndex: "address", render: data => data || '--' },
     { title: "联系人", dataIndex: "nickname", render: data => data || '--' },
     { title: "超管账号", dataIndex: "username", render: data => data || '--' },
-    { title: "经营范围", dataIndex: "businessScope", render: data => data? data.substring(0, data.length-1) : '--' },
+    { title: "经营范围", dataIndex: "businessScope", render: data => data ? data.substring(0, data.length - 1) : '--' },
     { title: "创建时间", dataIndex: "gmtCreate", render: data => data ? dateUtil.getDateTime(data) : "--" },
     {
       title: "状态",
@@ -140,7 +140,7 @@ class Page extends Component {
     if (inputKey != 'null') {
       _data.status = inputKey || null;
     }
-    _data.inputValue = inputValue || null;
+    _data.inputData = inputValue || null;
     this.params = {
       ...data,
       ..._data
@@ -175,7 +175,7 @@ class Page extends Component {
         console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
       }
     };
-    
+
     return (
       <CommonPage title={_title} description={_description} >
         <div style={{ padding: '10px' }}>
@@ -185,7 +185,11 @@ class Page extends Component {
 
             <div className='flex-between align-center margin-bottom20'>
               <Form layout='inline'>
-                <Form.Item>
+                <Form.Item
+                  field="roleId"
+                  wrapperCol={{ span: 12 }}
+                  style={{ width: 300 }}
+                >
                   {
                     getFieldDecorator('inputKey', {
                       initialValue: "null"

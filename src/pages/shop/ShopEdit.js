@@ -253,7 +253,7 @@ class Page extends Component {
               <Col span={6} className='text-right label-required'>
                 经营范围：
               </Col>
-              <Col span={14} style={{ display: 'flex' }}>
+              <Col  style={{ display: 'flex' }}>
                 <Button type='primary' onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px', height: '40px' }} type='primary'>选择经营分类</Button>
                 {category}
               </Col>
@@ -331,6 +331,7 @@ class Page extends Component {
         </div>
 
         <RelativeCategoryModal
+         maxLength={5}
           categoryIds={this.state.categoryIds}
           onOk={this.handleOk}
           onCancel={this.hideCModal}

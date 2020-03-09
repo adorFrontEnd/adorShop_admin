@@ -16,7 +16,7 @@ const getIdMap = (arr) => {
 
 const getTotalName = (id, idMap) => {
   let item = idMap[id];
-  let parentId = item.parentId;
+  let parentId = item.parentId
   if (parentId == '0') {
     return item.name
   } else {

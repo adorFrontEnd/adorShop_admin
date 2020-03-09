@@ -24,11 +24,14 @@ const getDetail = (params) => {
   return baseHttpProvider.getApi('api/shop/getDetail', params);
 }
 
-
+const getList = (params) => {
+  return baseHttpProvider.getApi('api/category/getList', params);
+}
 export {
     shopList,
     saveOrUpdate,
     checkShopOper,
     updateStatus,
-    getDetail
+    getDetail,
+    getList
 }

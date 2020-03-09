@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Input, Select, Form, Button, Checkbox, Radio, Modal, Row, Col, Tree, Icon } from 'antd'
 import { getIdMap, getSelectArrTotalName, getCheckedNamesByIds, getCleanRelativeIdsById } from './categoryUtils';
-import { searchList } from '../../api/setting/ClasssifySetting';
+import {getList } from '../../api/shopManage/shopList';
 import { parseTree, getTreeMapAndData } from '../../utils/tree';
 import './category.less';
 import Toast from "../../utils/toast";
@@ -61,9 +61,9 @@ class cModal extends Component {
     this.setState({
       showClassifyLoading: true
     })
-    searchList()
+    getList()
       .then(res => {
-        let rawClassifyList = res.data;
+        let rawClassifyList = res;
         let { treeData, treeMap } = getTreeMapAndData(rawClassifyList);
         let idMap = getIdMap(rawClassifyList)
         this.setState({

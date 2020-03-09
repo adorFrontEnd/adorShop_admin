@@ -39,6 +39,10 @@ class Page extends Component {
     this._showTableLoading();
     searchList(this.params).then(res => {
       this._hideTableLoading();
+      let tableDataList = res.data.sort(this.objectArraySort('parentId'));
+      if (tableDataList[0].parentId == 0) {
+        tableDataList = parseTree(tableDataList, true);
+      }
       let _pagination = pagination(res, (current) => {
         this.params.page = current;
         _this.getPageData();
@@ -48,10 +52,7 @@ class Page extends Component {
         _this.getPageData();
       })
 
-      let tableDataList = res.data.sort(this.objectArraySort('parentId'));
-      if (tableDataList[0].parentId == 0) {
-        tableDataList = parseTree(tableDataList, true);
-      }
+
       this.setState({
         tableDataList,
         rawClassifyList: res.data,
@@ -183,12 +184,17 @@ class Page extends Component {
     }
     let reslut = this.formatParmas(checked, selectValue);
     let { parentId, level, isSuperclass } = reslut;
+
     let params = { ...data, name, parentId, level, isSuperclass, imageUrl };
     let title = '添加分类成功！';
     if (this.state.selectOper) {
       let { id } = this.state.selectOper;
       params.id = id;
       title = '修改分类成功！'
+    }
+    if (!parentId || !level) {
+      Toast('请选择父分类或点击无父分类')
+      return
     }
     saveOrUpdate(params)
       .then(() => {
@@ -211,7 +217,7 @@ class Page extends Component {
     }
     if (checked) {
       isSuperclass = 1;
-      parentId = 0;
+      parentId = "0";
       level = 1
     } else {
       isSuperclass = 0;
@@ -230,6 +236,7 @@ class Page extends Component {
       .then(() => {
         Toast("删除成功！");
         this.getPageData();
+        this.getlevelList();
       })
   }
 
@@ -281,7 +288,6 @@ class Page extends Component {
 
   // 分类的排序input更改
   onClassifySortChange = (value, id) => {
-
     let { rawClassifyList, tableDataList } = this.state;
     if (!rawClassifyList) {
       return;
@@ -404,8 +410,6 @@ class Page extends Component {
           <SubmitForm
             clearWhenHide={true}
             showForm={this.state.newItemModalVisible}
-            // setFormValue={this.state.editFormValue}
-            // formItemList={this.newItemFormList}
             saveClicked={this.newItemModalSaveClicked}
             cancelClicked={this._hideNewItemModal}
           >
@@ -416,19 +420,18 @@ class Page extends Component {
               <Col span={12}>
                 <Input placeholder='请输入分类名称' onChange={this.onInputChange} value={this.state.name} allowClear />
                 {this.state.isShowTip ?
-                  <div className='color-red' style={{lineHeight:'16px'}}>请输入分类名称</div> : null
+                  <div className='color-red' style={{ lineHeight: '16px' }}>请输入分类名称</div> : null
                 }
               </Col>
             </Row>
             <Row className='line-height40'>
-              <Col span={8} className='text-right label-required'>
+              <Col span={8} className='text-right'>
                 父分类：
               </Col>
               <Col span={12}>
                 <div>
                   <Cascader
                     options={this.state.classList}
-                    // expandTrigger="hover"
                     displayRender={this.displayRender}
                     onChange={this.onSlectChange}
                     changeOnSelect
@@ -436,7 +439,6 @@ class Page extends Component {
                     value={this.state.selectValue}
                     disabled={this.state.checked}
                     placeholder={this.state.checked ? '请选择' : this.state.placeholder || '请选择'}
-                  // placeholder='请选择'
                   />
                 </div>
               </Col>
@@ -446,7 +448,7 @@ class Page extends Component {
               </Col>
               <Col span={16}>
                 <div>
-                  <Checkbox checked={this.state.checked} onChange={this.onChange} disabled={this.state.parentId} />
+                  <Checkbox checked={this.state.checked} onChange={this.onChange} disabled={this.state.selectValue && this.state.selectValue.length} />
                   <span className='margin-left'>无父分类</span>
                 </div>
               </Col>
@@ -477,5 +479,6 @@ class Page extends Component {
       </CommonPage >)
   }
 }
+
 
 export default Form.create()(Page);

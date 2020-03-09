@@ -21,7 +21,7 @@ const ShopEdit = asyncComponent(() => import("../pages/shop/ShopEdit"));
 
 const AreaSetting = asyncComponent(() => import("../pages/globalSetting/AreaSetting"));
 const ClasssifySetting = asyncComponent(() => import("../pages/globalSetting/ClasssifySetting"));
-const AuthSetting = asyncComponent(() => import("../pages/globalSetting/authSetting"));
+const AuthSetting = asyncComponent(() => import("../pages/globalSetting/AuthSetting"));
 
 
 

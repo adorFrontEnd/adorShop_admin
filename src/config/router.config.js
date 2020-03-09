@@ -112,7 +112,7 @@ const routerConfigArr = [
     route_name: "globalSetting.authSetting",
     path: baseRoute + "/globalSetting/authSetting",
     loginRequired: true,
-    moduleAuth: true,
+    moduleAuth: false,
     title: "权限设置",
     icon: "environment"
   },
@@ -120,7 +120,7 @@ const routerConfigArr = [
     route_name: "globalSetting.authSetting.authSetting",
     path: baseRoute + "/globalSetting/authSetting",
     loginRequired: true,
-    moduleAuth: true,
+    moduleAuth: false,
     title: "权限设置",
     icon: "environment"
   },
@@ -132,7 +132,7 @@ const routerConfigArr = [
     title: "地区设置",
     icon: "environment"
   },
-  
+
   {
     route_name: "globalSetting.areaSetting.areaDeploy",
     path: baseRoute + "/globalSetting/areaDeploy",

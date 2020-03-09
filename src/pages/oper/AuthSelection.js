@@ -32,7 +32,6 @@ class AuthSelection extends Component {
   }
 
   _getAllAuthList = () => {
-
     this.setState({
       authLoading: true
     })
@@ -83,7 +82,6 @@ class AuthSelection extends Component {
 
 
   selectRole = (id) => {
-
     let arr = [];
     if (!this.state.roleList || !this.state.roleList.length) {
       return;
@@ -152,9 +150,7 @@ class AuthSelection extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     return (
-
       <div>
-
         <Spin spinning={this.state.authLoading}>
           <div className='border-e8'>
             {

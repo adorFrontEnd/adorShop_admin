@@ -33,6 +33,7 @@ class Page extends Component {
   }
 
   _getAllAuthList = () => {
+    
     this.setState({
       authLoading: true
     })
