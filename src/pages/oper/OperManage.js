@@ -301,7 +301,7 @@ class Page extends Component {
           <Modal maskClosable={false}
             title="添加/修改账号"
             visible={this.state.newItemModalVisible}
-            footer={null}
+            // footer={null}
             onCancel={this._hideNewItemModal}
             className='noPadding'
           // width={900}

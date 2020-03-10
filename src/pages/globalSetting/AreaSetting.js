@@ -120,6 +120,7 @@ class AreaManage extends Component {
     if (!id || !arr || !arr.length) {
       return;
     }
+   
     let index = arr.findIndex((item) => {
       return item.id && item.id == id;
     });

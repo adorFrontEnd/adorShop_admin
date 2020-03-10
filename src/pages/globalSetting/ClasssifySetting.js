@@ -7,7 +7,7 @@ import dateUtil from '../../utils/dateUtil';
 import { searchList, saveOrUpdate, levelList, saveSort, deleteClassify } from '../../api/setting/ClasssifySetting';
 import { searchRoleList } from '../../api/oper/role';
 import { pagination } from '../../utils/pagination';
-import { parseTree, getTreeLeMapLevelList } from '../../utils/tree';
+import { parseTree, getTreeLeMapLevelList, getTreeMapAndData } from '../../utils/tree';
 import PictureWall from '../../components/upload/PictureWall';
 
 const _title = "分类设置";
@@ -25,6 +25,7 @@ class Page extends Component {
   }
 
   componentWillMount() {
+
     this.getPageData();
     this.getlevelList();
   }
@@ -39,10 +40,6 @@ class Page extends Component {
     this._showTableLoading();
     searchList(this.params).then(res => {
       this._hideTableLoading();
-      let tableDataList = res.data.sort(this.objectArraySort('parentId'));
-      if (tableDataList[0].parentId == 0) {
-        tableDataList = parseTree(tableDataList, true);
-      }
       let _pagination = pagination(res, (current) => {
         this.params.page = current;
         _this.getPageData();
@@ -52,10 +49,8 @@ class Page extends Component {
         _this.getPageData();
       })
 
-
       this.setState({
-        tableDataList,
-        rawClassifyList: res.data,
+        tableDataList: res.data,
         pagination: _pagination
       })
     }).catch(() => {
@@ -63,15 +58,6 @@ class Page extends Component {
     })
   }
 
-  objectArraySort = (keyName) => {
-    return function (objectN, objectM) {
-      var valueN = objectN[keyName]
-      var valueM = objectM[keyName]
-      if (valueN > valueM) return 1
-      else if (valueN < valueM) return -1
-      else return 0
-    }
-  }
   _showTableLoading = () => {
     this.setState({ showTableLoading: true });
   }
@@ -149,13 +135,13 @@ class Page extends Component {
     let image
     if (data) {
       let { name, status, imageUrl, parentId, level } = data;
-      let { rawClassifyList } = this.state;
+      let { tableDataList } = this.state;
       this.setState({ name })
       if (parentId == 0) {
         this.setState({ checked: true });
       } else {
         this.setState({ checked: false });
-        rawClassifyList.map(item => {
+        tableDataList.map(item => {
           if (item.id == parentId) {
             this.setState({ placeholder: item.name });
           }
@@ -192,7 +178,7 @@ class Page extends Component {
       params.id = id;
       title = '修改分类成功！'
     }
-    if (!parentId || !level) {
+    if (!level) {
       Toast('请选择父分类或点击无父分类')
       return
     }
@@ -288,18 +274,15 @@ class Page extends Component {
 
   // 分类的排序input更改
   onClassifySortChange = (value, id) => {
-    let { rawClassifyList, tableDataList } = this.state;
-    if (!rawClassifyList) {
+    let { tableDataList } = this.state;
+    if (!tableDataList) {
       return;
     }
-    let index = this.findClassifyIndexById(id, rawClassifyList);
+    let list = this.formatTableData(tableDataList)
+    let index = this.findClassifyIndexById(id, list);
     if (index || index == 0) {
-      rawClassifyList[index]['sort'] = value;
+      list[index]['sort'] = value;
       let changedClassifySort = this.state.changedClassifySort;
-      let tableDataList = rawClassifyList.sort(this.objectArraySort('parentId'));
-      if (tableDataList[0].parentId == 0) {
-        tableDataList = parseTree(tableDataList, true);
-      }
       changedClassifySort[id] = value;
       this.setState({
         changedClassifySort,
@@ -308,12 +291,31 @@ class Page extends Component {
 
     }
   }
-
+  // 处理表格数据
+  formatTableData = (arr) => {
+    let newArr = []
+    arr.map(v => {
+      newArr.push(v)
+      if (v.children) {
+        v.children.map(j => {
+          newArr.push(j)
+          if (j.children) {
+            j.children.map(h => {
+              newArr.push(h)
+            })
+          }
+        })
+      }
+    })
+    return newArr
+  }
   // 查找分类在数组的索引
   findClassifyIndexById = (id, arr) => {
     if (!id || !arr || !arr.length) {
       return;
     }
+
+    // console.log(newArr)
     let index = arr.findIndex((item) => {
       return item.id && item.id == id;
     });
