@@ -24,8 +24,7 @@ class Page extends Component {
     changedClassifySort: {}
   }
 
-  componentWillMount() {
-
+  componentDidMount() {
     this.getPageData();
     this.getlevelList();
   }
@@ -79,9 +78,7 @@ class Page extends Component {
 
   // 表格相关列 
   columns = [
-    {
-      title: "分类名称", dataIndex: "name"
-    },
+    { title: "分类名称", dataIndex: "name" },
     { title: "分类图片", dataIndex: "imageUrl", render: data => <span><img style={{ height: 40, width: 40 }} src={data} /></span> },
     {
       title: "排序", dataIndex: "roleName",
@@ -111,49 +108,32 @@ class Page extends Component {
     }
   ]
 
-  /* Modal操作*******************************************************************************************************************************************/
-
-  newItemFormList = [
-    {
-      type: "INPUT",
-      field: "name",
-      label: "分类名称:",
-      placeholder: "请输入名称",
-      rules: [
-        { required: true, message: '请输入名称!' }
-      ]
-    }
-
-  ]
   // 打开modal
   showAcountModal = (data) => {
-    this.setState({
-      newItemModalVisible: true
-    })
+    this.setState({ newItemModalVisible: true });
     let selectOper = data || null;
     let editFormValue = {};
     let image
     if (data) {
       let { name, status, imageUrl, parentId, level } = data;
       let { tableDataList } = this.state;
-      this.setState({ name })
+      this.setState({ name });
       if (parentId == 0) {
         this.setState({ checked: true });
       } else {
         this.setState({ checked: false });
         tableDataList.map(item => {
           if (item.id == parentId) {
-            this.setState({ placeholder: item.name });
+            let selectValue = [];
+            let str = `${item.name}-${item.id}-${item.level}`;
+            selectValue.push(str);
+            this.setState({ selectValue, disabled: true });
           }
         })
       }
       image = imageUrl;
-      editFormValue = { name };
     }
-    this.setState({
-      editFormValue,
-      selectOper, imageUrl: image
-    })
+    this.setState({ selectOper, imageUrl: image });
   }
   // 关闭modal
   _hideNewItemModal = () => {
@@ -165,13 +145,12 @@ class Page extends Component {
   newItemModalSaveClicked = (data) => {
     let { checked, imageUrl, selectValue, name } = this.state;
     if (!name) {
-      this.setState({ isShowTip: true })
+      this.setState({ isShowTip: true });
       return
     }
     let reslut = this.formatParmas(checked, selectValue);
     let { parentId, level, isSuperclass } = reslut;
-
-    let params = { ...data, name, parentId, level, isSuperclass, imageUrl };
+    let params = { ...data, name, ...reslut, imageUrl };
     let title = '添加分类成功！';
     if (this.state.selectOper) {
       let { id } = this.state.selectOper;
@@ -179,14 +158,14 @@ class Page extends Component {
       title = '修改分类成功！'
     }
     if (!level) {
-      Toast('请选择父分类或点击无父分类')
+      Toast('请选择父分类或点击无父分类');
       return
     }
     saveOrUpdate(params)
       .then(() => {
         Toast(title);
         this.getPageData();
-        this.getlevelList()
+        this.getlevelList();
         this._hideNewItemModal();
       })
   }
@@ -196,7 +175,7 @@ class Page extends Component {
     let isSuperclass
     let level
     let selectlevel
-    if (selectValue) {
+    if (selectValue && selectValue.length) {
       selectValue = selectValue.pop().split('-');
       parentId = selectValue[1];
       selectlevel = selectValue[2];
@@ -204,7 +183,7 @@ class Page extends Component {
     if (checked) {
       isSuperclass = 1;
       parentId = "0";
-      level = 1
+      level = 1;
     } else {
       isSuperclass = 0;
       if (selectlevel == 1) {
@@ -225,7 +204,7 @@ class Page extends Component {
         this.getlevelList();
       })
   }
-
+  // 图片上传
   uploadPic = (picList) => {
     let imageUrl = ''
     if (!picList || !picList.length) {
@@ -235,7 +214,7 @@ class Page extends Component {
       return;
     }
     imageUrl = picList[0];
-    this.setState({ imageUrl })
+    this.setState({ imageUrl });
   }
   //保存分类排序
   saveClassifyOrder = () => {
@@ -278,44 +257,41 @@ class Page extends Component {
     if (!tableDataList) {
       return;
     }
-    let list = this.formatTableData(tableDataList)
+    let list = this.formatTableData(tableDataList);
     let index = this.findClassifyIndexById(id, list);
     if (index || index == 0) {
       list[index]['sort'] = value;
       let changedClassifySort = this.state.changedClassifySort;
       changedClassifySort[id] = value;
       this.setState({
-        changedClassifySort,
-        tableDataList
+        changedClassifySort
       })
 
     }
   }
   // 处理表格数据
   formatTableData = (arr) => {
-    let newArr = []
+    let newArr = [];
     arr.map(v => {
-      newArr.push(v)
+      newArr.push(v);
       if (v.children) {
         v.children.map(j => {
-          newArr.push(j)
+          newArr.push(j);
           if (j.children) {
             j.children.map(h => {
-              newArr.push(h)
+              newArr.push(h);
             })
           }
         })
       }
     })
-    return newArr
+    return newArr;
   }
   // 查找分类在数组的索引
   findClassifyIndexById = (id, arr) => {
     if (!id || !arr || !arr.length) {
       return;
     }
-
-    // console.log(newArr)
     let index = arr.findIndex((item) => {
       return item.id && item.id == id;
     });
@@ -334,22 +310,23 @@ class Page extends Component {
   resetClicked = () => {
     this.props.form.resetFields();
   }
-
+  // 多选框
   onChange = (e) => {
     this.setState({ checked: e.target.checked });
   }
+  // 父分类选择框
   onSlectChange = (value) => {
     this.setState({ selectValue: value });
-
   }
+
   displayRender = (label) => {
     return label[label.length - 1];
   }
 
   onInputChange = e => {
-    const { value } = e.target;
-    this.setState({ name: value })
+    this.setState({ name: e.target.value });
   }
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const rowSelection = {
@@ -440,7 +417,7 @@ class Page extends Component {
                     style={{ width: 240 }}
                     value={this.state.selectValue}
                     disabled={this.state.checked}
-                    placeholder={this.state.checked ? '请选择' : this.state.placeholder || '请选择'}
+                    placeholder='请选择'
                   />
                 </div>
               </Col>
