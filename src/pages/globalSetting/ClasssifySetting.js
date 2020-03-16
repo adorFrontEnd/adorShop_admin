@@ -219,6 +219,7 @@ class Page extends Component {
   //保存分类排序
   saveClassifyOrder = () => {
     let order = this.formatSortSaveData(this.state.changedClassifySort);
+    console.log(order)
     if (!order) {
       Toast('排序暂未修改！');
       return;

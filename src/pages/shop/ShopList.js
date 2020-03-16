@@ -187,7 +187,7 @@ class Page extends Component {
               <Form layout='inline'>
                 <Form.Item
                   field="roleId"
-                  wrapperCol={{ span: 12 }}
+                  // wrapperCol={{ span: 12 }}
                   style={{ width: 300 }}
                 >
                   {

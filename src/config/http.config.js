@@ -7,7 +7,7 @@ let domain = '';
 
 // 博文
 // domain = "http://47.103.71.160:9091";
-domain = "http://192.168.20.52:9091";
+domain = "http://192.168.20.58:9091";
 // 测试
 // domain='http://test.shop.admin.adorsmart.com';
 let apiUrlPrefix = domain + "/";
