@@ -6,13 +6,18 @@ import dateUtil from '../../utils/dateUtil';
 import { shopList, updateStatus } from '../../api/shopManage/shopList';
 import { parseUrl, getReactRouterParams } from '../../utils/urlUtils';
 import { pagination } from '../../utils/pagination';
+import { SearchForm, SubmitForm } from '../../components/common-form';
 import { connect } from 'react-redux';
 import { changeRoute } from '../../store/actions/route-actions';
 import { NavLink, Link } from 'react-router-dom';
 import { baseRoute, routerConfig } from '../../config/router.config';
 const _title = "门店列表";
 const _description = "";
-
+const _shopStatus = {
+  "1": "正常",
+  "0": "已封"
+}
+const _shopStatusArr = Object.keys(_shopStatus).map(item => { return { id: item, name: _shopStatus[item] } });
 class Page extends Component {
   state = {
     tableDataList: null,
@@ -130,25 +135,38 @@ class Page extends Component {
   }
   /******查询表单操作****************************************************************************************************************** */
   // 顶部查询表单
+  // 顶部查询表单
+  formItemList = [
+    {
+      type: "SELECT",
+      field: "status",
+      style: { width: 140 },
+      defaultOption: { id: null, name: "全部状态" },
+      placeholder: '选择状态',
+      initialValue: null,
+      optionList: _shopStatusArr
+    },
+    {
+      type: "INPUT",
+      field: "inputData",
+      style: { width: 300 },
+      placeholder: "门店名称/联系人"
+    }]
+
   //查询按钮点击事件
-
-  searchClicked = () => {
-    let params = this.props.form.getFieldsValue();
-    let inputData = params.inputValue
-    let { inputKey, inputValue, ...data } = params;
-    let _data = {};
-    if (inputKey != 'null') {
-      _data.status = inputKey || null;
-    }
-    _data.inputData = inputValue || null;
+  searchClicked = (params) => {
+    let { inputData, storeStatus } = params;
+    inputData = inputData || null;
+    storeStatus = storeStatus || null;
     this.params = {
-      ...data,
-      ..._data
+      page: 1,
+      ...params,
+      inputData,
+      storeStatus
     }
-
-    this.params.page = 1;
     this.getPageData();
   }
+
   // 重置
   resetClicked = () => {
     this.props.form.resetFields();
@@ -180,47 +198,15 @@ class Page extends Component {
       <CommonPage title={_title} description={_description} >
         <div style={{ padding: '10px' }}>
           <div className='margin10-0' style={{ display: 'flex', justifyContent: 'space-between' }}>
-
             <Button style={{ width: 100 }} type='primary' onClick={this.goShopEdit}>创建门店</Button>
-
-            <div className='flex-between align-center margin-bottom20'>
-              <Form layout='inline'>
-                <Form.Item
-                  field="roleId"
-                  // wrapperCol={{ span: 12 }}
-                  style={{ width: 300 }}
-                >
-                  {
-                    getFieldDecorator('inputKey', {
-                      initialValue: "null"
-                    })(
-                      <Select>
-                        <Select.Option value='null'>全部状态</Select.Option>
-                        <Select.Option value='1'>正常</Select.Option>
-                        <Select.Option value='0'>已封</Select.Option>
-                      </Select>
-                    )
-                  }
-                </Form.Item>
-                <Form.Item
-                  field="inputValue"
-                  labelCol={{ span: 6 }}
-                  wrapperCol={{ span: 18 }}
-                >
-                  {
-                    getFieldDecorator('inputValue', {
-                    })(
-                      <Input allowClear style={{ width: "240px" }} placeholder='门店名称/联系人' onChange={this.boxInputDataChange} />
-                    )
-                  }
-                </Form.Item>
-
-              </Form>
-              <div style={{ minWidth: 370 }}>
-                <Button type='primary' className='normal margin0-20' onClick={() => { this.searchClicked() }}>查询</Button>
-                <Button className='normal' onClick={this.resetClicked}>重置</Button>
-
-              </div>
+            <div style={{ minWidth: 700 }}>
+              <SearchForm
+                width={700}
+                searchText='筛选'
+                towRow={false}
+                searchClicked={this.searchClicked}
+                formItemList={this.formItemList}
+              />
             </div>
           </div>
 

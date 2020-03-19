@@ -21,7 +21,7 @@ class Page extends Component {
   state = {
     isShowModal: false,
     status: null,
-    category: [],
+    category: null,
     categoryIds: [],
     date: null,
     imageUrl: null,
@@ -253,9 +253,18 @@ class Page extends Component {
               <Col span={6} className='text-right label-required'>
                 经营范围：
               </Col>
-              <Col  style={{ display: 'flex' }}>
-                <Button type='primary' onClick={() => { this.clickChoose() }} style={{ width: 150, marginRight: '20px', height: '40px' }} type='primary'>选择经营分类</Button>
-                {category}
+              <Col style={{ display: 'flex' }}>
+                <span><Button type='primary' onClick={() => { this.clickChoose() }}>选择经营分类</Button></span>
+                <span className='margin-left'>
+                  {
+                    category ?
+                      <span>
+                        {category}
+                      </span>
+                      :
+                      "暂未选择商品分类"
+                  }
+                </span>
               </Col>
             </Row>
           </Form>
@@ -331,7 +340,7 @@ class Page extends Component {
         </div>
 
         <RelativeCategoryModal
-         maxLength={5}
+          maxLength={5}
           categoryIds={this.state.categoryIds}
           onOk={this.handleOk}
           onCancel={this.hideCModal}
