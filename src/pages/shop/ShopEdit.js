@@ -62,7 +62,7 @@ class Page extends Component {
           name,
           address, time
         });
-        category = category.join(' ')
+        category =category? category.join(' '):null
         this.setState({
           userDetail: data,
           imageUrl: data.imageUrl,

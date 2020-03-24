@@ -12,6 +12,7 @@ domain = "http://192.168.20.58:9091";
 // domain='http://test.shop.admin.adorsmart.com';
 let apiUrlPrefix = domain + "/";
 
+
 let uploadDomain = "http://fi.adorsmart.com";
 let uploadApiUrlPrefix = uploadDomain + "/";
 let picUrlPrefix = "";
