@@ -9,7 +9,7 @@ import { searchRoleList } from '../../api/oper/role';
 import { pagination } from '../../utils/pagination';
 import { parseTree, getTreeLeMapLevelList, getTreeMapAndData } from '../../utils/tree';
 import PictureWall from '../../components/upload/PictureWall';
-
+import './index.less'
 const _title = "分类设置";
 const _description = "";
 const { Option } = Select;
@@ -78,7 +78,22 @@ class Page extends Component {
 
   // 表格相关列 
   columns = [
-    { title: "分类名称", dataIndex: "name" },
+    {
+      title: "分类名称", dataIndex: "name",
+      render: (text, record, index) => (
+        <span>
+          {record.level == 2 ?
+            <span><img className='tipImg' src='/image/next.png' />{record.name}</span> : null
+          }
+           {record.level == 3 ?
+            <span><img className='tipImg'  src='/image/next.png' /><img className='tipImg' src='/image/next.png' />{record.name}</span> : null
+          }
+          {record.level == 1 ?
+            <span>{record.name}</span> : null
+          }
+        </span>
+      )
+    },
     { title: "分类图片", dataIndex: "imageUrl", render: data => <span><img style={{ height: 40, width: 40 }} src={data} /></span> },
     {
       title: "排序", dataIndex: "roleName",
@@ -434,7 +449,7 @@ class Page extends Component {
               </Col>
             </Row>
             <Row className='margin-top10'>
-              <Col span={8} className='text-right label-required'>
+              <Col span={8} className='text-right'>
                 分类图片：
               </Col>
               <Col span={16} >

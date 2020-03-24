@@ -200,7 +200,7 @@ class cModal extends Component {
 
           </div>
           <div style={{ padding: '10px', width: '50%' }} className='flex-column flex-between'>
-            <div className='flex-wrap' style={{ minHeight: 100 }}>
+            <div className='flex-wrap'>
               {
                 categoryList && categoryList.map((item, index) =>
                   (

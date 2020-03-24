@@ -77,7 +77,7 @@ class Page extends Component {
         </div>
         <div style={{ display: 'flex', justifyContent: "space-between", padding: '20px 4px' }}>
         <div style={{ width: 366, flex: "0 0 auto", display: "flex", alignItems: "center" }} >
-          <Form theme='dark' className='login-form' style={{ width: 450}}>
+          <Form theme='dark' className='login-form' style={{ width: 450,height:'100%'}}>
             <Form.Item>
               {
                 getFieldDecorator('oldPassword', {

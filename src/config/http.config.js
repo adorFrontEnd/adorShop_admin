@@ -9,7 +9,7 @@ let domain = '';
 // domain = "http://47.103.71.160:9091";
 domain = "http://192.168.20.58:9091";
 // 测试
-// domain='http://test.shop.admin.adorsmart.com';
+// domain='http://test.shop.admin.adorsmart.com:9091';
 let apiUrlPrefix = domain + "/";
 
 

@@ -11,7 +11,6 @@ import { parseUrl, getReactRouterParams } from '../../utils/urlUtils';
 import RelativeCategoryModal from "../../components/category/RelativeCategoryModal";
 import moment from 'moment';
 import './index.less';
-import { chownSync } from "fs";
 
 // const _title = '创建门店';
 const _description = "";
@@ -21,7 +20,7 @@ class Page extends Component {
   state = {
     isShowModal: false,
     status: null,
-    category: null,
+    category: [],
     categoryIds: [],
     date: null,
     imageUrl: null,
@@ -97,6 +96,10 @@ class Page extends Component {
           this.setState({ isShowTest: true, isShowerr: false });
           return;
         }
+      }
+      if(!categoryIds){
+        Toast('请选择经营范围')
+        return;
       }
       let shopOperId = shopOper ? shopOper.id : userDetail.shopOperId;
       let params = { ...data, imageUrl, deadlineStamp, shopOperId, id, categoryIds };
