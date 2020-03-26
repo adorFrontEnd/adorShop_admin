@@ -165,13 +165,16 @@ class Page extends Component {
 
     let models = this.getRoleModels(selectRoleAuth);
     let specialModels = this.getRoleModels(selectRoleSpecAuth);
+    if(!models){
+      Toast('请选择权限！')
+      return;
+    }
     let params = { ...data, models, specialModels };
     let title = "添加角色成功！";
     if (selectRoleData) {
       params.id = selectRoleData.id;
       title = "修改角色成功！";
     }
-
     saveOrUpdate(params)
       .then(() => {
         Toast(title);
