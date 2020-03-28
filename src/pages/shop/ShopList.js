@@ -91,7 +91,7 @@ class Page extends Component {
       render: (text, record, index) => (
         <span>
           <span>
-            <span onClick={() => this.goShopEdit(record)} style={{ color: '#ff8716' }}>编辑</span>
+            <a onClick={() => this.goShopEdit(record)} style={{ color: '#ff8716' }}>编辑</a>
             <Divider type="vertical" />
             {
               record.status == 1 ?

@@ -25,7 +25,7 @@ class Page extends Component {
     date: null,
     imageUrl: null,
     shopOper: null,
-    isChange: false,
+    isChangeSuperOper: false,
     _title: null,
     idstatus: 0,
     userDetail: null,
@@ -36,9 +36,9 @@ class Page extends Component {
     let urlParams = parseUrl(this.props.location.search);
     let { id } = urlParams.args;
     let _title = id == 0 ? '创建门店' : '编辑门店';
-    let isChange = id == 0 ? true : false;
+    let isChangeSuperOper = id == 0 ? true : false;
     this.getDetail(id);
-    this.setState({ _title, idstatus: id, isChange });
+    this.setState({ _title, idstatus: id, isChangeSuperOper });
   }
   // 回滚数据
   getDetail = (id) => {
@@ -61,7 +61,7 @@ class Page extends Component {
           name,
           address, time
         });
-        category =category? category.join(' '):null
+        category = category ? category.join(' ') : null
         this.setState({
           userDetail: data,
           imageUrl: data.imageUrl,
@@ -75,7 +75,7 @@ class Page extends Component {
 
   }
   clickChange = () => {
-    this.setState({ isChange: true })
+    this.setState({ isChangeSuperOper: true })
   }
   saveDataClicked = () => {
     this.props.form.validateFields((err, data) => {
@@ -97,12 +97,18 @@ class Page extends Component {
           return;
         }
       }
-      if(!categoryIds){
+      if (!categoryIds) {
         Toast('请选择经营范围')
         return;
       }
       let shopOperId = shopOper ? shopOper.id : userDetail.shopOperId;
-      let params = { ...data, imageUrl, deadlineStamp, shopOperId, id, categoryIds };
+      let params = { ...data, imageUrl, deadlineStamp, id, categoryIds };
+
+      // 没有更改的时候不提交shopOperId
+      let shouldSubmitShopOperId = !id || (this.state.isChangeSuperOper && shopOper && shopOper.id != userDetail.shopOperId);
+      if (shouldSubmitShopOperId) {
+        params.shopOperId = shopOperId;
+      }
       saveOrUpdate(params)
         .then(() => {
           Toast(`${id ? "编辑" : "创建"}成功!`, "success");
@@ -282,12 +288,12 @@ class Page extends Component {
               <div style={{ display: 'flex', marginLeft: '13%', marginBottom: '10px' }}>
                 <div>{userDetail && userDetail.nickname}</div>
                 <div style={{ margin: '0 10px' }}>{userDetail && userDetail.username}</div>
-                <div onClick={this.clickChange} style={{ color: '#ff6700' }}>更换超管</div>
+                <a onClick={this.clickChange} style={{ color: '#ff6700' }}>更换超管</a>
               </div> : null
           }
 
           {
-            this.state.isChange ?
+            this.state.isChangeSuperOper ?
               <div>
                 <Row className='margin-top10'>
                   <Col span={6} className='text-right label-required'>
