@@ -74,16 +74,18 @@ class Page extends Component {
   params = {
 
   }
+
   clickChange = () => {
     this.setState({ isChangeSuperOper: true })
   }
+
   saveDataClicked = () => {
     this.props.form.validateFields((err, data) => {
       if (err) {
         return;
       }
       let { date, imageUrl, shopOper, categoryIds, userDetail, status, idstatus, phone } = this.state;
-      let deadlineStamp = dateUtil.getDayStartStamp(Date.parse(date));
+      let deadlineStamp = Date.parse(date);
       categoryIds = categoryIds ? categoryIds.join() : null;
       let id = userDetail ? userDetail.id : null;
       if (phone) {
@@ -243,20 +245,17 @@ class Page extends Component {
               label='授权截止'
               field='time'
             >
-              <div style={{ display: 'flex', marginTop: '10px' }}>
-                {
-                  getFieldDecorator('time', {
-                    rules: [
-                      { required: true, message: '请选择时间' }
+              {
+                getFieldDecorator('time', {
+                  rules: [
+                    { required: true, message: '请选择时间' }
 
-                    ]
-                  })(
-                    <DatePicker onChange={this.onDateChange} style={{ width: 170, height: '40px' }} showTime={true} placeholder={"请选择时间"} format="YYYY-MM-DD HH:mm:ss" />
-                  )
-                }
-                <div style={{ color: 'red', marginLeft: '10px', lineHeight: '40px' }}>到达授权截止日期门店自动封禁</div>
-              </div>
-
+                  ]
+                })(
+                  <DatePicker onChange={this.onDateChange} style={{ width: 170, height: '40px' }} showTime={true} placeholder={"请选择时间"} format="YYYY-MM-DD HH:mm:ss" />
+                )
+              }
+              <span style={{ color: 'red', marginLeft: '10px', lineHeight: '40px' }}>到达授权截止日期门店自动封禁</span>
             </Form.Item>
             <Row className='line-height40'>
               <Col span={6} className='text-right label-required'>
