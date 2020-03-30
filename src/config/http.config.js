@@ -1,18 +1,13 @@
 let domain = '';
 
-//俊宝
-// domain = "http://192.168.20.94:9300";
-// domain = "http://192.168.20.95:7100";
-
 
 // 博文
-// domain = "http://47.103.71.160:9091";
 domain = "http://192.168.20.58:9091";
+// domain = "http://47.103.71.160:9091";
+
 // 测试
 // domain='http://test.shop.admin.adorsmart.com:9091';
 let apiUrlPrefix = domain + "/";
-
-
 let uploadDomain = "http://fi.adorsmart.com";
 let uploadApiUrlPrefix = uploadDomain + "/";
 let picUrlPrefix = "";
